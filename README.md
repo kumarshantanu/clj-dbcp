@@ -27,11 +27,34 @@ The recommended way to create a datasource is to call the
 (make-datasource {:adapter :mysql :host 'localhost :database 'empdb})
 ```
 
+or,
+
+```clojure
+(make-datasource :mysql {:host 'localhost :database 'empdb})
+```
+
 Sections below describe which of the keys are applicable to various databases:
 
-### Embedded databases
+### Generic JDBC connections
 
-| Database |`:adapter`  | `:target`  | Required keys           | Optional keys |
+| `:adapter`     | Required keys            | Desired keys |
+|----------------|--------------------------|--------------|
+| `:jdbc`        | `:classname` `:jdbc-url` | `:val-query` |
+| `:subprotocol` | `:classname` `:subname`  | `:val-query` |
+
+
+### Prebuilt (JNDI, ODBC) connections
+
+| `:adapter`   | Required keys | Optional keys |
+|--------------|---------------|---------------|
+| `:jndi`      | `:context`    |               |
+| `:odbc`      | `:dsn`        | `:lite?`      |
+| `:odbc-lite` | `:dsn`        |               |
+
+
+### Open Source embedded databases
+
+| Database | `:adapter` | `:target`  | Required keys           | Optional keys |
 |----------|------------|------------|-------------------------|---------------|
 | Axion    | `:axiondb` | `:memory`  | `:database`             |               |
 |          |            | `:filesys` | `:database` `:db-path`  |               |
@@ -45,10 +68,34 @@ Sections below describe which of the keys are applicable to various databases:
 |          |            | `:network` | `:host` `:database`     | `:port`       |
 | HSQLDB   | `:hsqldb`  | `:memory`  | `:database`             |               |
 |          |            | `:filesys` | `:database`             |               |
-|          |            | `:network` | `:host` `database`      | `:port`       |
+|          |            | `:network` | `:host` `:database`     | `:port`       |
 | Mckoi    | `:mckoi`   | `:filesys` | `:database`             |               |
 | SQLite   | `:sqlite`  | `:memory`  |                         |               |
 |          |            | `:filesys` | `:database`             |               |
+
+
+### Open Source drivers, network connections
+
+| Database          | `:adapter`        | Required keys       | Optional keys |
+|-------------------|-------------------|---------------------|---------------|
+| CUBRID            | `:cubrid`         | `:host` `:database` | `:port`       |
+| Firebird          | `:firebird`       | `:host` `:database` | `:port`       |
+| SQL Server (jTDS) | `:jtds-sqlserver` | `:host` `:database` | `:port`       |
+| Sybase (jTDS)     | `:jtds-sybase`    | `:host` `:database` | `:port`       |
+| MonetDB           | `:monetdb`        | `:host` `:database` | `:port`       |
+| MySQL             | `:mysql`          | `:host` `:database` | `:port`       |
+| PostgreSQL        | `:postgresql`     | `:host` `:database` | `:port`       |
+
+
+### Proprietary drivers, network connections
+
+| Database   | `:adapter`   | Required keys                    | Optional keys |
+|------------|--------------|----------------------------------|---------------|
+| IBM DB2    | `:db2`       | `:host` `:database`              | `:port`       |
+| Oracle     | `:oracle`    | `:host` `:database`/`:system-id` | `:port`       |
+| SapDB      | `:sapdb`     | `:host` `:database`              | `:port`       |
+| SQL Server | `:sqlserver` |                                  | `:host` `:instance` `:port` |
+| Sybase     | `:sybase`    | `:host`                          | `:port` `:database` |:
 
 
 ### Example
