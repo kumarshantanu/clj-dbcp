@@ -90,8 +90,7 @@
    {:classname "org.apache.derby.jdbc.EmbeddedDriver"
     :subprotocol "derby"
     :subname "memory:defaultsubprotoexplicit;create=true;"
-    :val-query "values(1)"}
-   ])
+    :val-query "values(1)"}])
 
 
 (deftest test-jdbc
@@ -111,7 +110,7 @@
    {:adapter :derby   :target :filesys :database 'target/default}
    {:adapter :h2      :target :filesys :database 'target/default}
    {:adapter :hsqldb  :target :filesys :database 'target/default}
-   {:adapter :mckoi   :target :filesys :database "./test/mckoi.conf"
+   {:adapter :mckoi                    :database "./test/mckoi.conf"
     :user "sa" :password "pw"
     :setup du/setup-mckoi-local-database}
    {:adapter :sqlite  :target :filesys :database 'target/default3}

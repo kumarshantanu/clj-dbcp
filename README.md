@@ -69,7 +69,7 @@ Sections below describe which of the keys are applicable to various databases:
 | HSQLDB   | `:hsqldb`  | `:memory`  | `:database`             |               |
 |          |            | `:filesys` | `:database`             |               |
 |          |            | `:network` | `:host` `:database`     | `:port`       |
-| Mckoi    | `:mckoi`   | `:filesys` | `:database`             |               |
+| Mckoi    | `:mckoi`   |            | `:database`             |               |
 | SQLite   | `:sqlite`  | `:memory`  |                         |               |
 |          |            | `:filesys` | `:database`             |               |
 

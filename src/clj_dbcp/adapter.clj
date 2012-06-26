@@ -133,9 +133,7 @@
                      :username  "sa"
                      :password  ""}
     :mckoi          {:classname "com.mckoi.JDBCDriver"
-                     :jdbc-url
-                     (matcher-target
-                       {:filesys (U "jdbc:mckoi:local://%s" :database)})
+                     :jdbc-url  (U "jdbc:mckoi:local://%s" :database)
                      :val-query "SELECT 1"}
     :sqlite         {:classname "org.sqlite.JDBC"
                      :jdbc-url
