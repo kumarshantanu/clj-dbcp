@@ -116,17 +116,19 @@
   (make-datasource {:adapter :odbc-lite :dsn :moo})                    ;; ODBC-lite (MS-Access, MS-Excel etc.)
   (make-datasource {:class-name 'com.mysql.Driver
                     :jdbc-url   \"jdbc:mysql://localhost/emp\"})       ;; JDBC is default adapter"
-  ([adapter opts]
+  ([adapter opts] {:pre [(keyword? adapter)]}
      (if (= adapter :jndi) (do (assert (contains? opts :context))
                                (assert (string?   (get opts :context)))
                                (jndi-datasource   (:context opts)))
-         (let [e-opts (merge opts (adap/defaults opts))]
+         (let [e-opts (merge opts (-> opts
+                                      (dissoc :adapter)
+                                      (assoc :adapter adapter)
+                                      adap/defaults))]
            (if (:lite? e-opts) (lite-datasource e-opts)
                (jdbc-datasource e-opts)))))
   ([opts] {:pre [(map? opts)]}
-    (if (contains? opts :adapter)
-      (make-datasource (:adapter opts) opts)
-      (let [adapter (or (when (contains? opts :subprotocol) :subprotocol)
-                        (when (contains? opts :dsn)         :odbc))]
-       (make-datasource adapter (if-not adapter opts
-                                        (assoc opts :adapter adapter)))))))
+     (let [adapter (or (:adapter opts)
+                       (when (contains? opts :subprotocol) :subprotocol)
+                       (when (contains? opts :dsn)         :odbc)
+                       :jdbc)]
+       (make-datasource adapter opts))))

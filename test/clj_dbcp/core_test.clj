@@ -63,6 +63,11 @@
                      (teardown))))))))
 
 
+(deftest test-adapter-arg
+  (test-datasource (make-datasource :axiondb {:target :memory
+                                              :database :defaultmax})))
+
+
 (deftest test-jndi
   "See also (not used): http://commons.apache.org/dbcp/guide/jndi-howto.html"
   (tu/with-root-context (javax.naming.InitialContext.)
@@ -171,6 +176,7 @@
 
 (defn test-ns-hook
   []
+  (test-adapter-arg)
   (test-jdbc)
   (test-embedded)
   ;; (test-odbc)    ;; to be run only on Windows
