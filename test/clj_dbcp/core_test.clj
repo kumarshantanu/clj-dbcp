@@ -146,7 +146,7 @@
    ;; [:cubrid         'localhost 'cbuser   's3cr3t 'dbcp]
    ;; [:jtds-sqlserver 'localhost 'sqluser  's3cr3t 'dbcp]
    ;; [:jtds-sybase    'localhost 'syuser   's3cr3t 'dbcp]
-   ;; [:monet          'localhost 'mouser   's3cr3t 'dbcp]
+   ;; [:monetdb        'localhost 'mouser   's3cr3t 'dbcp]
    ;; [:mysql          'localhost 'root     ""      'dbcp]
    ;; [:postgresql     'localhost 'pguser   's3cr3t 'dbcp]
    ;; --- network (proprietary) databases ---
