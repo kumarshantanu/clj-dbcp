@@ -35,6 +35,22 @@ or,
 
 Sections below describe which of the keys are applicable to various databases:
 
+
+### Optional keys for all JDBC connections
+
+| Keyword arg    | Meaning                             | Default value          |
+|----------------|-------------------------------------|------------------------|
+| `:properties`  | Map of property names and values    | Not set                |
+| `:user`        | Database username                   | Not set                |
+| `:username`    | Database username, same as `:user`  | Not set                |
+| `:password`    | Database password                   | Not set                |
+| `:val-query`   | Validation query                    | As per `:target`       |
+| `:min-idle`    | Minimum idle connections in pool    | Not set                |
+| `:max-idle`    | Maximum idle connections in pool    | Not set                |
+| `:max-active`  | Maximum active connections in pool  | Not set, -ve= no limit |
+| `:pool-pstmt?` | Whether to pool prepared statements | true                   |
+
+
 ### Generic JDBC connections
 
 | `:adapter`     | Required keys            | Desired keys |
@@ -43,11 +59,10 @@ Sections below describe which of the keys are applicable to various databases:
 | `:subprotocol` | `:classname` `:subname`  | `:val-query` |
 
 
-### Prebuilt (JNDI, ODBC) connections
+### ODBC connections (likely applicable for the Windows platform)
 
 | `:adapter`   | Required keys | Optional keys |
 |--------------|---------------|---------------|
-| `:jndi`      | `:context`    |               |
 | `:odbc`      | `:dsn`        | `:lite?`      |
 | `:odbc-lite` | `:dsn`        |               |
 
@@ -95,7 +110,22 @@ Sections below describe which of the keys are applicable to various databases:
 | Oracle     | `:oracle`    | `:host` `:database`/`:system-id` | `:port`       |
 | SapDB      | `:sapdb`     | `:host` `:database`              | `:port`       |
 | SQL Server | `:sqlserver` |                                  | `:host` `:instance` `:port` |
-| Sybase     | `:sybase`    | `:host`                          | `:port` `:database` |:
+| Sybase     | `:sybase`    | `:host`                          | `:port` `:database` |
+
+
+### JNDI connections
+
+You can open a JNDI datasource (unlike the JDBC datasource) as follows:
+
+```clojure
+(make-datasource :jndi {:context "java:comp/env/myDataSource"})
+```
+
+or,
+
+```clojure
+(jndi-datasource "java:comp/env/myDataSource")
+```
 
 
 ### Example
