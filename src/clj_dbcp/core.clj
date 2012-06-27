@@ -121,7 +121,6 @@
                                (assert (string?   (get opts :context)))
                                (jndi-datasource   (:context opts)))
          (let [e-opts (merge opts (-> opts
-                                      (dissoc :adapter)
                                       (assoc :adapter adapter)
                                       adap/defaults))]
            (if (:lite? e-opts) (lite-datasource e-opts)
