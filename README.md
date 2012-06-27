@@ -8,9 +8,9 @@ here: https://bitbucket.org/kumarshantanu/clj-dbcp
 The supported databases are:
 * Supported and tested
   * Apache Derby, Axion, HSQLDB, H2, Mckoi, SQLite
-* Supported but not tested
   * Regular ODBC DSN, Lite ODBC DSN (eg. MS-Excel workbooks)
   * CUBRID, Firebird, MySQL, MonetDB, PostgreSQL
+* Supported but not tested
   * IBM DB2, jTDS (SQL Server, Sybase), Oracle, SapDB, SQLServer, Sybase
 
 
