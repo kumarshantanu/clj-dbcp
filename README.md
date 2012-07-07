@@ -38,7 +38,7 @@ Sections below describe which of the keys are applicable to various databases:
 
 ### Optional keys for all JDBC connections
 
-| Keyword arg       | Meaning                                | Default value   |
+| Keyword arg       | Meaning                                | Default/special |
 |-------------------|----------------------------------------|-----------------|
 | `:properties`     | Map of property names and values       |                 |
 | `:user`           | Database username                      |                 |
@@ -46,9 +46,9 @@ Sections below describe which of the keys are applicable to various databases:
 | `:password`       | Database password                      |                 |
 | `:val-query`      | Validation query                       | As per `:target`|
 | `:init-size`      | Initial size of connection pool (int)  |                 |
-| `:min-idle`       | Minimum idle connections in pool       |                 |
-| `:max-idle`       | Maximum idle connections in pool       |                 |
-| `:max-active`     | Maximum active connections in pool | Not set, -ve= no limit |
+| `:min-idle`       | Minimum idle connections in pool (int) |                 |
+| `:max-idle`       | Maximum idle connections in pool (int) |                 |
+| `:max-active`     | Maximum active connections in pool (int) |  -ve=no limit |
 | `:pool-pstmt?`    | Whether to pool prepared statements    | true            |
 | `:max-open-pstmt` | Maximum open prepared statements (int) |                 |
 | `:remove-abandoned?` | Whether to remove abandoned connections | true        |
