@@ -38,17 +38,22 @@ Sections below describe which of the keys are applicable to various databases:
 
 ### Optional keys for all JDBC connections
 
-| Keyword arg    | Meaning                             | Default value          |
-|----------------|-------------------------------------|------------------------|
-| `:properties`  | Map of property names and values    | Not set                |
-| `:user`        | Database username                   | Not set                |
-| `:username`    | Database username, same as `:user`  | Not set                |
-| `:password`    | Database password                   | Not set                |
-| `:val-query`   | Validation query                    | As per `:target`       |
-| `:min-idle`    | Minimum idle connections in pool    | Not set                |
-| `:max-idle`    | Maximum idle connections in pool    | Not set                |
-| `:max-active`  | Maximum active connections in pool  | Not set, -ve= no limit |
-| `:pool-pstmt?` | Whether to pool prepared statements | true                   |
+| Keyword arg       | Meaning                                | Default value   |
+|-------------------|----------------------------------------|-----------------|
+| `:properties`     | Map of property names and values       |                 |
+| `:user`           | Database username                      |                 |
+| `:username`       | Database username, same as `:user`     |                 |
+| `:password`       | Database password                      |                 |
+| `:val-query`      | Validation query                       | As per `:target`|
+| `:init-size`      | Initial size of connection pool (int)  |                 |
+| `:min-idle`       | Minimum idle connections in pool       |                 |
+| `:max-idle`       | Maximum idle connections in pool       |                 |
+| `:max-active`     | Maximum active connections in pool | Not set, -ve= no limit |
+| `:pool-pstmt?`    | Whether to pool prepared statements    | true            |
+| `:max-open-pstmt` | Maximum open prepared statements (int) |                 |
+| `:remove-abandoned?` | Whether to remove abandoned connections | true        |
+| `:remove-abandoned-timeout-seconds` | Timeout in seconds (int) | 300         |
+| `:log-abandoned?` | Whether to log abandoned connections   | true            |
 
 
 ### Generic JDBC connections

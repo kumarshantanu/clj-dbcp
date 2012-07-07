@@ -46,10 +46,19 @@
            username
            password
            val-query
+           init-size
            min-idle
            max-idle
            max-active
-           pool-pstmt?]}]
+           pool-pstmt?
+           max-open-pstmt
+           remove-abandoned?
+           remove-abandoned-timeout-seconds
+           log-abandoned?]
+    :or {pool-pstmt?              true
+         remove-abandoned?        true
+         remove-abandoned-timeout 60
+         log-abandoned?           true}}]
   {:pre [(string? classname) (seq classname)
          (Class/forName classname)
          (string? jdbc-url) (seq jdbc-url)]}
@@ -58,28 +67,47 @@
                                           (.setUrl             jdbc-url))]
     (when properties  (do (assert (map? properties))
                           (doseq [[k v] properties]
-                            (doto datasource
-                              (.addConnectionProperty (as-str k) (as-str v))))))
-    (when user        (doto datasource (.setUsername (as-str user))))
-    (when username    (doto datasource (.setUsername (as-str username))))
-    (when password    (doto datasource (.setPassword (as-str password))))
+                            (.addConnectionProperty datasource
+                                                    (as-str k) (as-str v)))))
+    (when user        (.setUsername datasource (as-str user)))
+    (when username    (.setUsername datasource (as-str username)))
+    (when password    (.setPassword datasource (as-str password)))
     (when val-query   (do (assert (string? val-query))
                           (doto datasource
                             (.setValidationQuery ^String val-query)
                             (.setTestOnBorrow  true)
                             (.setTestOnReturn  true)
                             (.setTestWhileIdle true))))
+    (when init-size   (do (assert (integer? init-size))
+                          (assert (pos?     init-size))
+                          (.setInitialSize datasource init-size)))
     (when min-idle    (do (assert (integer? min-idle))
-                          (assert (pos? min-idle))
-                          (doto datasource (.setMinIdle min-idle))))
+                          (assert (pos?     min-idle))
+                          (.setMinIdle datasource min-idle)))
     (when max-idle    (do (assert (integer? max-idle))
-                          (assert (pos? max-idle))
-                          (doto datasource (.setMaxIdle max-idle))))
+                          (assert (pos?     max-idle))
+                          (.setMaxIdle datasource max-idle)))
     (when max-active  (do (assert (integer? max-active))
-                          (assert (pos? max-active))
-                          (doto datasource (.setMaxActive max-active))))
-    (when pool-pstmt? (do (assert (true? pool-pstmt?))
-                          (doto datasource (.setPoolPreparedStatements true))))
+                          (assert (pos?     max-active))
+                          (.setMaxActive datasource max-active)))
+    (when pool-pstmt? (do (assert (true?    pool-pstmt?))
+                          (.setPoolPreparedStatements datasource true)))
+    (when max-open-pstmt
+                      (do (assert (integer? max-open-pstmt))
+                          (assert (pos?     max-open-pstmt))
+                          (.setMaxOpenPreparedStatements datasource
+                                                         max-open-pstmt)))
+    (when remove-abandoned?
+                      (do (assert (true?    remove-abandoned?))
+                          (.setRemoveAbandoned datasource true)))
+    (when remove-abandoned-timeout-seconds
+                      (do (assert (integer? remove-abandoned-timeout-seconds))
+                          (assert (pos?     remove-abandoned-timeout-seconds))
+                          (.setRemoveAbandonedTimeout
+                            datasource remove-abandoned-timeout-seconds)))
+    (when log-abandoned?
+                      (do (assert (true?    log-abandoned?))
+                          (.setLogAbandoned datasource true)))
     datasource))
 
 
