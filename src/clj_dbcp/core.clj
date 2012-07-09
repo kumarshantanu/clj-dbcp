@@ -55,10 +55,10 @@
            remove-abandoned?
            remove-abandoned-timeout-seconds
            log-abandoned?]
-    :or {pool-pstmt?              true
-         remove-abandoned?        true
-         remove-abandoned-timeout 60
-         log-abandoned?           true}}]
+    :or {pool-pstmt?                      true
+         remove-abandoned?                true
+         remove-abandoned-timeout-seconds 60
+         log-abandoned?                   true}}]
   {:pre [(string? classname) (seq classname)
          (Class/forName classname)
          (string? jdbc-url) (seq jdbc-url)]}
