@@ -24,13 +24,15 @@ The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
 
 ```clojure
-(make-datasource {:adapter :mysql :host 'localhost :database 'empdb})
+(make-datasource {:adapter :mysql :host 'localhost :database 'empdb
+                  :username "empuser" :password "s3cr3t"})
 ```
 
 or,
 
 ```clojure
-(make-datasource :mysql {:host 'localhost :database 'empdb})
+(make-datasource :mysql {:host 'localhost :database 'empdb
+                         :user :empuser   :password 's3cr3t})
 ```
 
 Sections below describe which of the keys are applicable to various databases:
