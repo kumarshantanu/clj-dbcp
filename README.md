@@ -16,9 +16,9 @@ The supported databases are:
 
 ## Usage
 
-_This library is not on Clojars yet._
+On Clojars: https://clojars.org/clj-dbcp
 
-Include dependencies as `[clj-dbcp "0.7.0-SNAPSHOT"]`.
+Include as a Leiningen dependency: `[clj-dbcp "0.7.0"]`.
 
 The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
