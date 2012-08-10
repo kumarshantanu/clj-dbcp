@@ -1,8 +1,10 @@
 (ns clj-dbcp.core
   "Create DataSource using Apache DBCP"
-  (:require [clj-dbcp.adapter :as adap])
+  (:require [clojure.string :as str]
+            [clj-dbcp.adapter :as adap])
   (:use [clj-dbcp.util :only (as-str)])
-  (:import (java.sql DriverManager)
+  (:import (java.net URI)
+           (java.sql DriverManager)
            (javax.sql DataSource)
            (org.apache.commons.dbcp BasicDataSource)
            (clj_dbcp ConnectionWrapper)))
@@ -58,7 +60,8 @@
     :or {pool-pstmt?                      true
          remove-abandoned?                true
          remove-abandoned-timeout-seconds 60
-         log-abandoned?                   true}}]
+         log-abandoned?                   true}
+    :as opts}] (println "-----" opts "-----")
   {:pre [(string? classname) (seq classname)
          (Class/forName classname)
          (string? jdbc-url) (seq jdbc-url)]}
@@ -128,6 +131,42 @@
           (Class/forName classname)
           (ConnectionWrapper.
             (DriverManager/getConnection jdbc-url username password) ignore))))))
+
+
+(def default-subproto-map {"postgres" "postgresql"})
+
+
+(defn parse-url
+  "Given a String or a URI instance, and an optional subproto-map for conversion
+  return a map of args suitable for use with `make-datasouce`."
+  ([jdbc-uri subproto-map] {:pre [(map? subproto-map)]}
+     (cond (instance?
+            URI jdbc-uri) (let [host (.getHost ^URI jdbc-uri)
+                                port (let [p (.getPort ^URI jdbc-uri)]
+                                       (and (pos? p) p))
+                                path (.getPath ^URI jdbc-uri)
+                                scheme  (.getScheme ^URI jdbc-uri)
+                                adapter (subproto-map scheme scheme)]
+                            (merge {:adapter  (keyword adapter)
+                                    :jdbc-url (str "jdbc:" adapter
+                                                   "://" host
+                                                   (when port ":") (or port "")
+                                                   path)}
+                                   (if-let [user-info (.getUserInfo ^URI jdbc-uri)]
+                                     (let [[un pw] (str/split user-info #":")]
+                                       {:username un
+                                        :password pw}))))
+           (string? jdbc-uri) (parse-url (if (.startsWith ^String jdbc-uri "jdbc:")
+                                           (URI. (subs jdbc-uri 5))
+                                           (URI. jdbc-uri))
+                                         subproto-map)
+           :otherwise (throw
+                       (IllegalArgumentException.
+                        (str "Expected `jdbc-uri` to be java.net.URI or String,"
+                             " but found (" (pr-str (type jdbc-uri)) ") "
+                             (pr-str jdbc-uri))))))
+  ([jdbc-uri]
+     (parse-url jdbc-uri default-subproto-map)))
 
 
 (defn make-datasource
