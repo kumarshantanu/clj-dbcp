@@ -2,8 +2,8 @@
 
 ## 0.8.0 / 2012-????-??
 
-* [TODO] provide function to parse argument map from java.net.URI
-* [TODO] provide function to parse argument map from String (Heroku)
+* provide function to parse argument map from java.net.URI
+* provide function to parse argument map from String (Heroku)
 * [TODO] tests for the two above
 
 ## 0.7.0 / 2012-July-30
