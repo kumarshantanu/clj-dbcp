@@ -46,7 +46,15 @@
                                                    (format f v))))))))))
 
 
-(def ^{:doc "Alias for format-url"} U format-url)
+(defn U
+  "Same as `format-url`, except that it simply returns the :jdbc-url value if
+  already provided. If not provided, calls `format-url` to compute the URL."
+  [& args]
+  (let [f-url (apply format-url args)]
+    (fn [opts]
+      (if (contains? opts :jdbc-url)
+        (get opts :jdbc-url)
+        (f-url opts)))))
 
 
 (defn realize
@@ -173,7 +181,7 @@
                      :jdbc-url  (U "jdbc:oracle:thin:@//%s%s/%s"  :host [:port ":%s"] #{:database :system-id})
                      :val-query "SELECT 1 FROM DUAL;"}
     :sapdb          {:classname "com.sap.dbtech.jdbc.DriverSapDB"
-                     :jdbc-url (U "jdbc:sapdb://%s%s/%d"          :host [:port ":%s"] :database)
+                     :jdbc-url  (U "jdbc:sapdb://%s%s/%d"          :host [:port ":%s"] :database)
                      :val-query "SELECT 1 FROM DUAL"}
     :sqlserver      {:classname "com.microsoft.sqlserver.jdbc.SQLServerDriver"
                      :jdbc-url  (U "jdbc:sqlserver://%s%s%s"     [:host] [:instance "\\%s"] [:port ":%s"])
