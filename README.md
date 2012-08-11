@@ -45,7 +45,7 @@ You can also parse a database URL (Heroku style) and use to create datasource:
 or,
 
 ```clojure
-(make-datasource (parse-url (System/env "DATABASE_URL")))
+(make-datasource (parse-url (System/getenv "DATABASE_URL")))
 ```
 
 Sections below describe which of the keys are applicable to various databases:
