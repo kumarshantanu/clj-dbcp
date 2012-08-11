@@ -27,23 +27,24 @@
                     (first (some #(when (contains? opts %) [(get opts %)])
                                  kset)))
         as-set    #(if (set? %) (do (assert (seq %)) %) #{%})
-        as-vector #(if (vector? %) (let [[k f m r] %]
-                                     [(as-set k) f m r])
-                       [(as-set %) "%s" :mandatory #".*"])]
+        as-vector #(if (vector? %) (let [[k f m r d] %]
+                                     [(as-set k) f m r d])
+                       [(as-set %) "%s" :mandatory #".*" ""])]
     (fn [opts]
       (apply format template (->> ks
                                   (map as-vector)
-                                  (map (fn [[kset fmt mandatory? regex]]
+                                  (map (fn [[kset fmt mandatory? regex default]]
                                          (when (and (not (kset? opts kset))
                                                     mandatory?)
                                            (not-found kset opts))
-                                         (let [v (as-str (get-k opts kset))
-                                               f (or fmt "%s")
-                                               r (or regex #".*")]
-                                           (when-not (re-matches r v)
-                                             (not-match kset v r))
-                                           (if-not (kset? opts kset) ""
-                                                   (format f v))))))))))
+                                         (if-not (kset? opts kset)
+                                           (str default)
+                                           (let [v (as-str (get-k opts kset))
+                                                 f (or fmt "%s")
+                                                 r (or regex #".*")]
+                                             (when-not (re-matches r v)
+                                               (not-match kset v r))
+                                             (format f v))))))))))
 
 
 (def ^{:doc "shortcut to format-url"} R format-url)
@@ -181,8 +182,25 @@
                      :jdbc-url  (U "jdbc:db2://%s%s/%s"           :host [:port ":%s"] :database)
                      :val-query "select * from sysibm.SYSDUMMY1;"}
     :oracle         {:classname "oracle.jdbc.driver.OracleDriver"
-                     :jdbc-url  (U "jdbc:oracle:thin:@//%s%s/%s"  :host [:port ":%s"] #{:database :system-id})
-                     :val-query "SELECT 1 FROM DUAL;"}
+                     :jdbc-url
+                     (matcher [:style :system-id]
+                              {:system-id    (U "jdbc:oracle:thin:@%s:%s:%s"
+                                                :host [:port "%s" nil #".*" "1521"]
+                                                #{:database :system-id})
+                               :service-name (U "jdbc:oracle:thin:@//%s:%s/%s"
+                                                :host [:port "%s" nil #".*" "1521"]
+                                                #{:database :service-name})
+                               :tns-name     (U "jdbc:oracle:thin:@%s"
+                                                #{:database :tns-name})
+                               :ldap         (U "jdbc:oracle:thin:@ldap://%s%s/%s,%s"
+                                                :host [:port ":%s"]
+                                                #{:database :system-id :service-name}
+                                                :ldap-str)
+                               :oci          (U "jdbc:oracle:oci:@%s"
+                                                #{:database :tns-alias})
+                               :oci8         (U "jdbc:oracle:oci8:@%s"
+                                                #{:database :tns-alias})})
+                     :val-query "SELECT 1 FROM DUAL"}
     :sapdb          {:classname "com.sap.dbtech.jdbc.DriverSapDB"
                      :jdbc-url  (U "jdbc:sapdb://%s%s/%d"          :host [:port ":%s"] :database)
                      :val-query "SELECT 1 FROM DUAL"}
