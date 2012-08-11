@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_06.jdk/Contents/Home/
+# You may need to uncomment/edit the following line on Mac OS X
+#JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_06.jdk/Contents/Home/
 
 function each_test {
   ./clean.sh && lein2 clean
