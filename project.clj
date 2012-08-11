@@ -1,4 +1,4 @@
-(defproject clj-dbcp "0.8.0-SNAPSHOT"
+(defproject clj-dbcp "0.8.0"
   :description "Clojure wrapper for Apache DBCP to create JDBC connection pools."
   :url "https://github.com/kumarshantanu/clj-dbcp"
   :license {:name "Eclipse Public License"
@@ -8,12 +8,10 @@
                  :archive "https://groups.google.com/group/bitumenframework"
                  :other-archives ["https://groups.google.com/group/clojure"]
                  :post "bitumenframework@googlegroups.com"}
-  :source-paths ["src"]
   :java-source-paths ["java-src"]
   :javac-options {:destdir "target/classes/"
                   :source  "1.5"
                   :target  "1.5"}
-  :test-paths ["test"]
   :dependencies [[commons-dbcp "1.4"]]
   :profiles {:dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
                                   [oss-jdbc    "0.8.0"]
