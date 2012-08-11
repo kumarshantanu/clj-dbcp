@@ -140,31 +140,34 @@
   "Given a String or a URI instance, and an optional subproto-map for conversion
   return a map of args suitable for use with `make-datasouce`."
   ([jdbc-uri subproto-map] {:pre [(map? subproto-map)]}
-     (cond (instance?
-            URI jdbc-uri) (let [host (.getHost ^URI jdbc-uri)
-                                port (let [p (.getPort ^URI jdbc-uri)]
-                                       (and (pos? p) p))
-                                path (.getPath ^URI jdbc-uri)
-                                scheme  (.getScheme ^URI jdbc-uri)
-                                adapter (subproto-map scheme scheme)]
-                            (merge {:adapter  (keyword adapter)
-                                    :jdbc-url (str "jdbc:" adapter
-                                                   "://" host
-                                                   (when port ":") (or port "")
-                                                   path)}
-                                   (if-let [user-info (.getUserInfo ^URI jdbc-uri)]
-                                     (let [[un pw] (str/split user-info #":")]
-                                       {:username un
-                                        :password pw}))))
-           (string? jdbc-uri) (parse-url (if (.startsWith ^String jdbc-uri "jdbc:")
-                                           (URI. (subs jdbc-uri 5))
-                                           (URI. jdbc-uri))
-                                         subproto-map)
-           :otherwise (throw
-                       (IllegalArgumentException.
-                        (str "Expected `jdbc-uri` to be java.net.URI or String,"
-                             " but found (" (pr-str (type jdbc-uri)) ") "
-                             (pr-str jdbc-uri))))))
+     (cond
+      ;; URI
+      (instance? URI jdbc-uri)
+      (let [host (.getHost ^URI jdbc-uri)
+            port (let [p (.getPort ^URI jdbc-uri)]
+                   (and (pos? p) p))
+            path (.getPath ^URI jdbc-uri)
+            scheme  (.getScheme ^URI jdbc-uri)
+            adapter (subproto-map scheme scheme)]
+        (merge {:adapter  (keyword adapter)
+                :jdbc-url (str "jdbc:" adapter "://" host
+                               (when port ":") (or port "") path)}
+               (if-let [user-info (.getUserInfo ^URI jdbc-uri)]
+                 (let [[un pw] (str/split user-info #":")]
+                   {:username un
+                    :password pw}))))
+      ;; String
+      (string? jdbc-uri)
+      (parse-url (if (.startsWith ^String jdbc-uri "jdbc:")
+                   (URI. (subs jdbc-uri 5))
+                   (URI. jdbc-uri))
+                 subproto-map)
+      ;; default
+      :otherwise
+      (throw (IllegalArgumentException.
+              (str "Expected `jdbc-uri` to be java.net.URI or String,"
+                   " but found (" (pr-str (type jdbc-uri)) ") "
+                   (pr-str jdbc-uri))))))
   ([jdbc-uri]
      (parse-url jdbc-uri default-subproto-map)))
 
