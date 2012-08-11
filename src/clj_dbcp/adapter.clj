@@ -46,6 +46,9 @@
                                                    (format f v))))))))))
 
 
+(def ^{:doc "shortcut to format-url"} R format-url)
+
+
 (defn U
   "Same as `format-url`, except that it simply returns the :jdbc-url value if
   already provided. If not provided, calls `format-url` to compute the URL."
@@ -94,9 +97,9 @@
   defaults
   (matcher-adapter
    {;; JDBC & ODBC
-    :jdbc           {:classname (U "%s" :classname)
+    :jdbc           {:classname (R "%s" :classname)
                      :jdbc-url  (U "%s" :jdbc-url)}
-    :subprotocol    {:classname (U "%s" :classname)
+    :subprotocol    {:classname (R "%s" :classname)
                      :jdbc-url  (U "jdbc:%s:%s" :subprotocol :subname)}
     :odbc           {:classname "sun.jdbc.odbc.JdbcOdbcDriver"
                      :jdbc-url  (U "jdbc:odbc:%s" :dsn)}
