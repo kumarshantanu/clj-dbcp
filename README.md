@@ -10,15 +10,16 @@ The supported databases are:
   * Apache Derby, Axion, HSQLDB, H2, Mckoi, SQLite
   * Regular ODBC DSN, Lite ODBC DSN (eg. MS-Excel workbooks)
   * CUBRID, Firebird, MySQL, MonetDB, PostgreSQL
+  * Oracle (partially tested)
 * Supported but not tested
-  * IBM DB2, jTDS (SQL Server, Sybase), Oracle, SapDB, SQLServer, Sybase
+  * IBM DB2, jTDS (SQL Server, Sybase), SapDB, SQLServer, Sybase
 
 
 ## Usage
 
 On Clojars: https://clojars.org/clj-dbcp
 
-Include as a Leiningen dependency: `[clj-dbcp "0.7.0"]`.
+Include as a Leiningen dependency: `[clj-dbcp "0.8.0"]`.
 
 The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
@@ -33,6 +34,18 @@ or,
 ```clojure
 (make-datasource :mysql {:host 'localhost :database 'empdb
                          :user :empuser   :password 's3cr3t})
+```
+
+You can also parse a database URL (Heroku style) and use to create datasource:
+
+```clojure
+(make-datasource (parse-url "postgres://foo:bar@heroku.com:5489/hellodb"))
+```
+
+or,
+
+```clojure
+(make-datasource (parse-url (System/env "DATABASE_URL")))
 ```
 
 Sections below describe which of the keys are applicable to various databases:
@@ -109,12 +122,23 @@ Sections below describe which of the keys are applicable to various databases:
 | PostgreSQL        | `:postgresql`     | `:host` `:database` | `:port`       |
 
 
-### Proprietary drivers, network connections
+### Proprietary Oracle drivers (default `:style` = `:system-id`)
+
+|`:style`       | Required keys                       | Optional keys |
+|---------------|-------------------------------------|---------------|
+|`:system-id`   | `:host`, `:database`/`:system-id`   | `:port`       |
+|`:service-name`| `:host`, `:database`/`:service-name`| `:port`       |
+|`:tns-name`    | `:database`/`:tns-name`             | `:port`       |
+|`:ldap`        | `:host`, `:database`/`:system-id`/`:service-name`, `:ldap-str` | `:port` |
+|`:oci`         | `:database`/`:tns-alias`            |               |
+|`:oci8`        | `:database`/`:tns-alias`            |               |
+
+
+### Other proprietary drivers, network connections
 
 | Database   | `:adapter`   | Required keys                    | Optional keys |
 |------------|--------------|----------------------------------|---------------|
 | IBM DB2    | `:db2`       | `:host` `:database`              | `:port`       |
-| Oracle     | `:oracle`    | `:host` `:database`/`:system-id` | `:port`       |
 | SapDB      | `:sapdb`     | `:host` `:database`              | `:port`       |
 | SQL Server | `:sqlserver` |                                  | `:host` `:instance` `:port` |
 | Sybase     | `:sybase`    | `:host`                          | `:port` `:database` |

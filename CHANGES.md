@@ -1,10 +1,12 @@
 # Releas History and TODO
 
-## 0.8.0 / 2012-????-??
 
-* provide function to parse argument map from java.net.URI
-* provide function to parse argument map from String (Heroku)
-* [TODO] tests for the two above
+## 0.8.0 / 2012-August-12
+
+* Parse argument map from java.net.URI
+* Parse argument map from String (Heroku compatibility)
+* Comprehensive Oracle connection parameters
+
 
 ## 0.7.0 / 2012-July-30
 
