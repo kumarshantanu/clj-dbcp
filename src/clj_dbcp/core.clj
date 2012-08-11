@@ -61,7 +61,7 @@
          remove-abandoned?                true
          remove-abandoned-timeout-seconds 60
          log-abandoned?                   true}
-    :as opts}] (println "-----" opts "-----")
+    :as opts}]
   {:pre [(string? classname) (seq classname)
          (Class/forName classname)
          (string? jdbc-url) (seq jdbc-url)]}
