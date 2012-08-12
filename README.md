@@ -122,7 +122,7 @@ Sections below describe which of the keys are applicable to various databases:
 | PostgreSQL        | `:postgresql`     | `:host` `:database` | `:port`       |
 
 
-### Proprietary Oracle drivers (default `:style` = `:system-id`)
+### Proprietary Oracle drivers (`:adapter` = `:oracle`, default `:style` = `:system-id`)
 
 |`:style`       | Required keys                       | Optional keys |
 |---------------|-------------------------------------|---------------|
