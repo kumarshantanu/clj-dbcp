@@ -19,7 +19,7 @@ The supported databases are:
 
 On Clojars: https://clojars.org/clj-dbcp
 
-Include as a Leiningen dependency: `[clj-dbcp "0.8.0"]`.
+Include as a Leiningen dependency: `[clj-dbcp "0.8.0"]` (supports Clojure 1.2 through Clojure 1.5)
 
 The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
