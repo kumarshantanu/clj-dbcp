@@ -1,4 +1,4 @@
-(defproject clj-dbcp "0.8.0"
+(defproject clj-dbcp "0.8.1"
   :description "Clojure wrapper for Apache DBCP to create JDBC connection pools."
   :url "https://github.com/kumarshantanu/clj-dbcp"
   :license {:name "Eclipse Public License"
@@ -19,7 +19,7 @@
              :1.2 {:dependencies [[org.clojure/clojure "1.2.1"]]}
              :1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
-             :1.5 {:dependencies [[org.clojure/clojure "1.5.0-alpha3"]]}}
+             :1.5 {:dependencies [[org.clojure/clojure "1.5.0-RC16"]]}}
   :aliases {"dev"     ["with-profile" "dev,1.4"]
             "all"     ["with-profile" "dev,1.2:dev,1.3:dev,1.4:dev,1.5"]
             "reflect" ["assoc" ":warn-on-reflection" "true" "compile"]}
