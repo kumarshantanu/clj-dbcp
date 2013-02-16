@@ -19,7 +19,7 @@ The supported databases are:
 
 On Clojars: https://clojars.org/clj-dbcp
 
-Include as a Leiningen dependency: `[clj-dbcp "0.8.0"]` (supports Clojure 1.2 through Clojure 1.5)
+Include as a Leiningen dependency: `[clj-dbcp "0.8.1"]` (supports Clojure 1.2 through Clojure 1.5)
 
 The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
@@ -214,14 +214,20 @@ $ lein2 dev swank
 Testing against the dev version:
 
 ```bash
-$ lein2 dev test
+$ ./run-tests
 ```
 
 Testing across several versions of Clojure:
 
 ```bash
-$ lein2 all test
+$ ./run-tests.sh all
 ```
+
+
+## Contributors
+
+* Shantanu Kumar (author)
+* Greg V (https://github.com/myfreeweb)
 
 
 ## Getting in touch
@@ -233,6 +239,6 @@ On Twitter: [@kumarshantanu](https://twitter.com/kumarshantanu)
 
 ## License
 
-Copyright © 2012 Shantanu Kumar
+Copyright © 2012-2013 Shantanu Kumar
 
 Distributed under the Eclipse Public License, the same as Clojure.
