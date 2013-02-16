@@ -1,6 +1,10 @@
 # Releas History and TODO
 
 
+## 0.8.1 / 2013-February-16
+
+* Don't lose query string when parsing URLs (Greg V)
+
 ## 0.8.0 / 2012-August-12
 
 * Parse argument map from java.net.URI
