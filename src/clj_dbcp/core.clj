@@ -147,11 +147,13 @@
             port (let [p (.getPort ^URI jdbc-uri)]
                    (and (pos? p) p))
             path (.getPath ^URI jdbc-uri)
+            query (.getRawQuery ^URI jdbc-uri)
             scheme  (.getScheme ^URI jdbc-uri)
             adapter (subproto-map scheme scheme)]
         (merge {:adapter  (keyword adapter)
                 :jdbc-url (str "jdbc:" adapter "://" host
-                               (when port ":") (or port "") path)}
+                               (when port ":") (or port "") path
+                               (when query "?") (or query ""))}
                (if-let [user-info (.getUserInfo ^URI jdbc-uri)]
                  (let [[un pw] (str/split user-info #":")]
                    {:username un
