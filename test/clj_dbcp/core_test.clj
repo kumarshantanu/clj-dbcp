@@ -5,7 +5,7 @@
     [clojure.pprint         :as pp]
     [clojure.java.jdbc      :as sql])
   (:use clojure.test
-        clj-dbcp.core))
+    clj-dbcp.core))
 
 
 (deftest test-parse-url
@@ -14,15 +14,15 @@
                :username "foo"
                :password "bar"
                :jdbc-url "jdbc:postgresql://heroku.com/hellodb"})
-           (m (parse-url "postgres://foo:bar@heroku.com/hellodb"))))
+          (m (parse-url "postgres://foo:bar@heroku.com/hellodb"))))
     (is (= (m {:adapter  :mysql
                :username "foo"
                :password "bar"
                :jdbc-url "jdbc:mysql://baz.com:5432/hellodb"})
-           (m (parse-url "jdbc:mysql://foo:bar@baz.com:5432/hellodb"))))
+          (m (parse-url "jdbc:mysql://foo:bar@baz.com:5432/hellodb"))))
     (is (= (m {:adapter  :postgresql
                :jdbc-url "jdbc:postgresql:///hellodb"})
-           (m (parse-url "postgresql://foo:bar@heroku.com:-5/hellodb"))))))
+          (m (parse-url "postgresql://foo:bar@heroku.com:-5/hellodb"))))))
 
 
 (defn test-crud
@@ -32,12 +32,12 @@
         updt-record {:id 1 :name "Shabir" :age 50}
         drop-table  #(sql/do-commands "DROP TABLE emp")
         retrieve-fn #(sql/with-query-results rows
-                      ["SELECT * FROM emp WHERE id=?" 1]
-                      (first rows))
+                       ["SELECT * FROM emp WHERE id=?" 1]
+                       (first rows))
         as-int-num #(reduce into {}
-                            (map (fn [[k v]] (if (number? v)
-                                               {k (int v)}
-                                               {k v})) %))]
+                      (map (fn [[k v]] (if (number? v)
+                                         {k (int v)}
+                                         {k v})) %))]
     (sql/with-connection dbspec
       ;; drop table if pre-exists
       (try (drop-table)
@@ -69,15 +69,15 @@
   "Create datasource from given options and run test"
   [opts]
   (testing (pr-str opts)
-           (let [setup (:setup opts)
-                 context (when setup (setup))]
-             (when context (tu/sleep 500))  ;; sleep for for server warmup
-             (try
-               (test-datasource (make-datasource opts))
-               (finally
-                 (when-let [teardown (:teardown opts)]
-                   (if context (teardown context)
-                     (teardown))))))))
+    (let [setup (:setup opts)
+          context (when setup (setup))]
+      (when context (tu/sleep 500))  ;; sleep for for server warmup
+      (try
+        (test-datasource (make-datasource opts))
+        (finally
+          (when-let [teardown (:teardown opts)]
+            (if context (teardown context)
+              (teardown))))))))
 
 
 (deftest test-adapter-arg
@@ -138,7 +138,7 @@
    {:adapter :sqlite  :target :filesys :database 'target/default3}
    ;; network (embedded) databases
    {:adapter :derby   :target :network :database 'default
-    :host 'localhost :port 2345 :user "sa" :password ""
+    :host 'localhost :port 2345 :user "sa" ;; :password ""
     :setup (partial du/start-derby-server "localhost" 2345)
     :teardown du/stop-derby-server}
    {:adapter :hsqldb  :target :network :database 'defaulthsql
@@ -178,7 +178,7 @@
 (deftest test-network
   (doseq [each network-tests]
     (test-one (zipmap [:adapter :host :user :password :database]
-                      each))))
+                each))))
 
 
 (def odbc-tests

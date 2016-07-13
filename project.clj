@@ -12,8 +12,10 @@
   :javac-options {:destdir "target/classes/"
                   :source  "1.5"
                   :target  "1.5"}
-  :dependencies [[commons-dbcp "1.4"]]
-  :profiles {:dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
+  :dependencies [[commons-dbcp "1.4"]
+                 [cumulus "0.1.0-SNAPSHOT"]]
+  :profiles {:provided {:dependencies [[org.clojure/clojure "1.5.1"]]}
+             :dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
                                   [oss-jdbc    "0.8.0"]
                                   [simple-jndi "0.11.4.1"]]}
              :1.2 {:dependencies [[org.clojure/clojure "1.2.1"]]}
