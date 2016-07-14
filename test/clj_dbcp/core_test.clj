@@ -3,9 +3,12 @@
     [clj-dbcp.dbserver-util :as du]
     [clj-dbcp.test-util     :as tu]
     [clojure.pprint         :as pp]
-    [clojure.java.jdbc      :as sql])
-  (:use clojure.test
-    clj-dbcp.core))
+    [clojure.java.jdbc      :as sql]
+    [cumulus.core           :as c]
+    [clojure.test  :refer :all]
+    [clj-dbcp.core :refer :all])
+  (:import
+    [javax.sql DataSource]))
 
 
 (deftest test-parse-url
@@ -83,11 +86,6 @@
               (teardown))))))))
 
 
-(deftest test-adapter-arg
-  (test-datasource (make-datasource :axiondb {:target :memory
-                                              :database :defaultmax})))
-
-
 (deftest test-jndi
   "See also (not used): http://commons.apache.org/dbcp/guide/jndi-howto.html"
   (tu/with-root-context (javax.naming.InitialContext.)
@@ -100,27 +98,27 @@
   [;; implicit :jdbc adapter
    {:classname "org.apache.derby.jdbc.EmbeddedDriver"
     :jdbc-url  "jdbc:derby:memory:defaultjdbc;create=true;"
-    :val-query "values(1)"}
+    :test-query "values(1)"}
    ;; explicit :jdbc adapter
    {:adapter   :jdbc
     :classname "org.apache.derby.jdbc.EmbeddedDriver"
     :jdbc-url  "jdbc:derby:memory:defaultjdbcexplicit;create=true;"
-    :val-query "values(1)"}
+    :test-query "values(1)"}
    ;; implicit :subprotocol adapter
    {:classname "org.apache.derby.jdbc.EmbeddedDriver"
     :subprotocol "derby"
     :subname "memory:defaultsubproto;create=true;"
-    :val-query "values(1)"}
+    :test-query "values(1)"}
    ;; explicit :subprotocol adapter
    {:classname "org.apache.derby.jdbc.EmbeddedDriver"
     :subprotocol "derby"
     :subname "memory:defaultsubprotoexplicit;create=true;"
-    :val-query "values(1)"}])
+    :test-query "values(1)"}])
 
 
 (deftest test-jdbc
   (doseq [each jdbc-tests]
-    (test-one each)))
+    (test-one (c/jdbc-params each))))
 
 
 (def embed-tests
@@ -156,7 +154,7 @@
 
 (deftest test-embedded
   (doseq [each embed-tests]
-    (test-one each)))
+    (test-one (c/jdbc-params each))))
 
 
 (def network-tests
@@ -180,8 +178,8 @@
 
 (deftest test-network
   (doseq [each network-tests]
-    (test-one (zipmap [:adapter :host :user :password :database]
-                each))))
+    (test-one (c/jdbc-params (zipmap [:adapter :host :user :password :database]
+                               each)))))
 
 
 (def odbc-tests
@@ -194,12 +192,35 @@
     (test-one each)))
 
 
+(deftest test-options
+  (testing "happy options combo"
+    (with-open [ds (make-datasource :h2 {:target :memory
+                                         :database "foo"
+                                         :username "user"
+                                         :password "password"
+                                         :pool-pstmt? true
+                                         :max-open-pstmt 2
+                                         :remove-abandoned-on-borrow? true
+                                         :remove-abandoned-on-maintenance? true})]
+      (is (instance? DataSource ds))))
+  (testing "unhappy (bad type) options"
+    (is (thrown? ClassCastException
+          (make-datasource :h2 {:target :memory
+                                :database "foo"
+                                :username "user"
+                                :password "password"
+                                :pool-pstmt? 2
+                                :max-open-pstmt true
+                                :remove-abandoned-on-borrow? true
+                                :remove-abandoned-on-maintenance? true})))))
+
+
 (defn test-ns-hook
   []
   (test-parse-url)
-  (test-adapter-arg)
   (test-jdbc)
   (test-embedded)
   ;; (test-odbc)    ;; to be run only on Windows
   (test-network)
+  (test-options)
   (test-jndi))

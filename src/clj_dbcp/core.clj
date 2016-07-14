@@ -2,12 +2,11 @@
   "Create DataSource using Apache DBCP"
   (:require
     [clojure.string :as str]
-    [cumulus.core :as c])
-  (:use [clj-dbcp.util :only (as-str)])  ; FIXME refactor using `require :refer` in 0.9
+    [clj-dbcp.util :refer (as-str)])
   (:import (java.net URI)
     (java.sql DriverManager)
     (javax.sql DataSource)
-    (org.apache.commons.dbcp BasicDataSource)
+    (org.apache.commons.dbcp2 BasicDataSource)
     (clj_dbcp ConnectionWrapper)))
 
 
@@ -48,21 +47,43 @@
            user
            username
            password
-           val-query  ; DEPRECATED, FIXME: remove in 0.9
            test-query
            init-size
            min-idle
            max-idle
-           max-active
+           max-total
            pool-pstmt?
            max-open-pstmt
            remove-abandoned?
            remove-abandoned-timeout-seconds
-           log-abandoned?]
+           log-abandoned?
+           remove-abandoned-on-borrow?
+           remove-abandoned-on-maintenance?
+           lifo-pool?
+           test-while-idle?
+           test-on-borrow?
+           test-on-return?
+           test-query-timeout
+           millis-between-eviction-runs
+           min-evictable-millis
+           tests-per-eviction
+           cache-state?]
     :or {pool-pstmt?                      true
          remove-abandoned?                true
+         init-size                        1
+         min-idle                         1
+         max-total                        2
+         max-idle                         1
          remove-abandoned-timeout-seconds 60
-         log-abandoned?                   true}
+         lifo-pool                        false
+         log-abandoned?                   true
+         test-on-borrow?                  true
+         test-on-return?                  true
+         test-while-idle?                 true
+         millis-between-eviction-runs     -1
+         min-evictable-millis             1800000
+         tests-per-eviction               3
+         cache-state?                     true}
     :as opts}]
   {:pre [(string? classname) (seq classname)
          (Class/forName classname)
@@ -77,12 +98,6 @@
     (when user        (.setUsername datasource (as-str user)))
     (when username    (.setUsername datasource (as-str username)))
     (when password    (.setPassword datasource (as-str password)))
-    (when val-query   (do (assert (string? val-query))
-                          (doto datasource
-                            (.setValidationQuery ^String val-query)
-                            (.setTestOnBorrow  true)
-                            (.setTestOnReturn  true)
-                            (.setTestWhileIdle true))))
     (when test-query   (do (assert (string? test-query))
                            (doto datasource
                              (.setValidationQuery ^String test-query)
@@ -98,9 +113,9 @@
     (when max-idle    (do (assert (integer? max-idle))
                           (assert (pos?     max-idle))
                           (.setMaxIdle datasource max-idle)))
-    (when max-active  (do (assert (integer? max-active))
-                          (assert (pos?     max-active))
-                          (.setMaxActive datasource max-active)))
+    (when max-total  (do (assert (integer? max-total))
+                         (assert (pos?     max-total))
+                         (.setMaxTotal datasource max-total)))
     (when pool-pstmt? (do (assert (true?    pool-pstmt?))
                           (.setPoolPreparedStatements datasource true)))
     (when max-open-pstmt
@@ -108,9 +123,12 @@
                           (assert (pos?     max-open-pstmt))
                           (.setMaxOpenPreparedStatements datasource
                                                          max-open-pstmt)))
-    (when remove-abandoned?
+    (when remove-abandoned-on-borrow?
                       (do (assert (true?    remove-abandoned?))
-                          (.setRemoveAbandoned datasource true)))
+                          (.setRemoveAbandonedOnBorrow datasource true)))
+    (when remove-abandoned-on-maintenance?
+                      (do (assert (true?    remove-abandoned?))
+                          (.setRemoveAbandonedOnMaintenance datasource true)))
     (when remove-abandoned-timeout-seconds
                       (do (assert (integer? remove-abandoned-timeout-seconds))
                           (assert (pos?     remove-abandoned-timeout-seconds))
@@ -119,6 +137,21 @@
     (when log-abandoned?
                       (do (assert (true?    log-abandoned?))
                           (.setLogAbandoned datasource true)))
+    (when lifo-pool? (.setLifo datasource lifo-pool?))
+    (when test-on-borrow? (.setTestOnBorrow datasource test-on-borrow?))
+    (when test-on-return? (.setTestOnReturn datasource test-on-return?))
+    (when test-while-idle? (.setTestWhileIdle datasource test-on-return?))
+    (when test-query-timeout (do (assert (integer? test-query-timeout))
+                                  (.setValidationQueryTimeout datasource test-query-timeout)))
+    (when millis-between-eviction-runs (do (assert (integer? millis-between-eviction-runs))
+                         (.setTimeBetweenEvictionRunsMillis datasource millis-between-eviction-runs)))
+    (when min-evictable-millis (do (assert (integer? min-evictable-millis))
+                         (assert (pos?     min-evictable-millis))
+                         (.setMinEvictableIdleTimeMillis datasource min-evictable-millis)))
+    (when tests-per-eviction (do (assert (integer? tests-per-eviction))
+                          (assert (pos?     tests-per-eviction))
+                          (.setNumTestsPerEvictionRun datasource tests-per-eviction)))
+    (when cache-state? (.setCacheState datasource cache-state?))
     datasource))
 
 
@@ -196,9 +229,7 @@
     (if (= adapter :jndi) (do (assert (contains? opts :context))
                             (assert (string?   (get opts :context)))
                             (jndi-datasource   (:context opts)))
-      (let [e-opts (merge opts (-> opts
-                                 (assoc :adapter adapter)
-                                 c/jdbc-params))]
+      (let [e-opts (assoc opts :adapter adapter)]
         (if (:lite? e-opts) (lite-datasource e-opts)
           (jdbc-datasource e-opts)))))
   ([opts] {:pre [(map? opts)]}

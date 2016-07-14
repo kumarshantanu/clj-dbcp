@@ -1,25 +1,13 @@
 # clj-dbcp
 
-Clojure wrapper for Apache DBCP to create JDBC connections pools.
-
-This code is rewritten from scratch to clean up the older versions residing
-here: https://bitbucket.org/kumarshantanu/clj-dbcp
-
-The supported databases are:
-* Supported and tested
-  * Apache Derby, Axion, HSQLDB, H2, Mckoi, SQLite
-  * Regular ODBC DSN, Lite ODBC DSN (eg. MS-Excel workbooks)
-  * CUBRID, Firebird, MySQL, MonetDB, PostgreSQL
-  * Oracle (partially tested)
-* Supported but not tested
-  * IBM DB2, jTDS (SQL Server, Sybase), SapDB, SQLServer, Sybase
+Clojure wrapper for Apache DBCP2 to create JDBC connections pools.
 
 
 ## Usage
 
 On Clojars: https://clojars.org/clj-dbcp
 
-Leiningen coordinates: `[clj-dbcp "0.8.2"]` (supports Clojure 1.2 through Clojure 1.9)
+Leiningen coordinates: `[clj-dbcp "0.9.0-SNAPSHOT"]` (supports Clojure 1.5 through Clojure 1.9)
 
 The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
@@ -29,7 +17,7 @@ The recommended way to create a datasource is to call the
                   :jdbc-url "jdbc:mysql://localhost/empdb"
                   :username "empuser"
                   :password "s3cr3t"
-                  :val-query "SELECT 1;"})
+                  :test-query "SELECT 1;"})
 ```
 
 You can also parse a database URL (Heroku style) and use to create datasource:
@@ -50,7 +38,7 @@ Sections below describe which of the keys are applicable to various databases:
 ### JDBC parameters
 
 Required: `:classname` (string), `:jdbc-url` (string)
-Optional: `:val-query` (string, DEPRECATED) OR `:test-query` (string)
+Optional: `:test-query` (string)
 
 
 ### Optional keys for all JDBC connections
@@ -61,89 +49,32 @@ Optional: `:val-query` (string, DEPRECATED) OR `:test-query` (string)
 | `:user`           | Database username                      |                 |
 | `:username`       | Database username, same as `:user`     |                 |
 | `:password`       | Database password                      |                 |
-| `:val-query`      | Validation query                       | As per `:target`|
+| `:test-query`      | Validation query                       | As per `:target`|
 | `:init-size`      | Initial size of connection pool (int)  |                 |
 | `:min-idle`       | Minimum idle connections in pool (int) |                 |
 | `:max-idle`       | Maximum idle connections in pool (int) |                 |
 | `:max-active`     | Maximum active connections in pool (int) |  -ve=no limit |
 | `:pool-pstmt?`    | Whether to pool prepared statements    | true            |
 | `:max-open-pstmt` | Maximum open prepared statements (int) |                 |
-| `:remove-abandoned?` | Whether to remove abandoned connections | true        |
-| `:remove-abandoned-timeout-seconds` | Timeout in seconds (int) | 300         |
-| `:log-abandoned?` | Whether to log abandoned connections   | true            |
+| `:remove-abandoned?`    | Whether to remove abandoned connections  | true        |
+| `:remove-abandoned-timeout-seconds` | Timeout in seconds (int)     | 300         |
+| `:log-abandoned?`       | Whether to log abandoned connections     | true        |
+| `:lifo-pool?`           | Whether Last-In-First-Out (LIFO) or not  | false       |
+| `:test-while-idle?`     | Whether validate the idle connections    | true        |
+| `:test-on-borrow?`      | Whether validate connections on borrow   | true        |
+| `:test-on-return?`      | Whether validate connections on return   | true        |
+| `:test-query-timeout`   | Timeout (seconds) for validation queries |             |
+| `:millis-between-eviction-runs`     | Millis to sleep between evicting unused connections | `-1` |
+| `:min-evictable-millis` | Millis an object may sit idle before it is evicted              | `1800000` |
+| `:tests-per-eviction`   | No. of connections to test during each eviction run             | `3` |
+| `:cache-state?`         | Whether to cache state                   |      true   |
 
 
-### [DEPRECATED] Generic JDBC connections
+### Generic JDBC connections
 
 | `:adapter`     | Required keys            | Desired keys |
 |----------------|--------------------------|--------------|
-| `:jdbc`        | `:classname` `:jdbc-url` | `:val-query` |
-| `:subprotocol` | `:classname` `:subname`  | `:val-query` |
-
-
-### [DEPRECATED] ODBC connections (likely applicable for the Windows platform)
-
-| `:adapter`   | Required keys | Optional keys |
-|--------------|---------------|---------------|
-| `:odbc`      | `:dsn`        | `:lite?`      |
-| `:odbc-lite` | `:dsn`        |               |
-
-
-### [DEPRECATED] Open Source embedded databases
-
-| Database | `:adapter` | `:target`  | Required keys           | Optional keys |
-|----------|------------|------------|-------------------------|---------------|
-| Axion    | `:axiondb` | `:memory`  | `:database`             |               |
-|          |            | `:filesys` | `:database` `:db-path`  |               |
-| Derby    | `:derby`   | `:memory`  | `:database`             |               |
-|          |            | `:filesys` | `:database`             |               |
-|          |            |`:classpath`| `:database`             |               |
-|          |            | `:jar`     | `:jar-path` `:database` |               |
-|          |            | `:network` | `:host` `:database`     | `:port`       |
-| H2       | `:h2`      | `:memory`  | `:database`             |               |
-|          |            | `:filesys` | `:database`             |               |
-|          |            | `:network` | `:host` `:database`     | `:port`       |
-| HSQLDB   | `:hsqldb`  | `:memory`  | `:database`             |               |
-|          |            | `:filesys` | `:database`             |               |
-|          |            | `:network` | `:host` `:database`     | `:port`       |
-| Mckoi    | `:mckoi`   |            | `:database`             |               |
-| SQLite   | `:sqlite`  | `:memory`  |                         |               |
-|          |            | `:filesys` | `:database`             |               |
-
-
-### [DEPRECATED] Open Source drivers, network connections
-
-| Database          | `:adapter`        | Required keys       | Optional keys |
-|-------------------|-------------------|---------------------|---------------|
-| CUBRID            | `:cubrid`         | `:host` `:database` | `:port`       |
-| Firebird          | `:firebird`       | `:host` `:database` | `:port`       |
-| SQL Server (jTDS) | `:jtds-sqlserver` | `:host` `:database` | `:port`       |
-| Sybase (jTDS)     | `:jtds-sybase`    | `:host` `:database` | `:port`       |
-| MonetDB           | `:monetdb`        | `:host` `:database` | `:port`       |
-| MySQL             | `:mysql`          | `:host` `:database` | `:port`       |
-| PostgreSQL        | `:postgresql`     | `:host` `:database` | `:port`       |
-
-
-### [DEPRECATED] Proprietary Oracle drivers (`:adapter` = `:oracle`, default `:style` = `:system-id`)
-
-|`:style`       | Required keys                       | Optional keys |
-|---------------|-------------------------------------|---------------|
-|`:system-id`   | `:host`, `:database`/`:system-id`   | `:port`       |
-|`:service-name`| `:host`, `:database`/`:service-name`| `:port`       |
-|`:tns-name`    | `:database`/`:tns-name`             | `:port`       |
-|`:ldap`        | `:host`, `:database`/`:system-id`/`:service-name`, `:ldap-str` | `:port` |
-|`:oci`         | `:database`/`:tns-alias`            |               |
-|`:oci8`        | `:database`/`:tns-alias`            |               |
-
-
-### [DEPRECATED] Other proprietary drivers, network connections
-
-| Database   | `:adapter`   | Required keys                    | Optional keys |
-|------------|--------------|----------------------------------|---------------|
-| IBM DB2    | `:db2`       | `:host` `:database`              | `:port`       |
-| SapDB      | `:sapdb`     | `:host` `:database`              | `:port`       |
-| SQL Server | `:sqlserver` |                                  | `:host` `:instance` `:port` |
-| Sybase     | `:sybase`    | `:host`                          | `:port` `:database` |
+| `:jdbc`        | `:classname` `:jdbc-url` | `:test-query` |
 
 
 ### JNDI connections
@@ -173,7 +104,9 @@ A typical CRUD example using Derby database is below:
 (def db-derby  ;; an in-memory database instance
   {:datasource
    (dbcp/make-datasource
-     {:adapter :derby :target :memory :database :empdb})})
+     {"org.apache.derby.jdbc.EmbeddedDriver"
+     "jdbc:derby:memory:foo;create=true;"
+     "values(1)"})})
 
 (defn crud
   []
