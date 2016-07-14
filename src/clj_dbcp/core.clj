@@ -2,8 +2,8 @@
   "Create DataSource using Apache DBCP"
   (:require
     [clojure.string :as str]
-    [cumulus.core :as c])
-  (:use [clj-dbcp.util :only (as-str)])  ; FIXME refactor using `require :refer` in 0.9
+    [cumulus.core :as c]
+    [clj-dbcp.util :refer (as-str)])
   (:import (java.net URI)
     (java.sql DriverManager)
     (javax.sql DataSource)
