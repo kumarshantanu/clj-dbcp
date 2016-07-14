@@ -1,9 +1,9 @@
 # Release History and TODO
 
 
-## 0.9.0 / 2016-July-??
+## 0.9.0 / 2016-July-14 (contributed by @nandhithar)
 
-* Drop support for JDK 1.5 (now Java 6 or higher is required)
+* Drop support for Java 5 and 6 (now Java 7 or higher is required)
 * Drop support for Clojure `1.2` through `1.4` (for code cleanup)
 * Drop support for DSL API for JDBC params (use Cumulus instead)
 * Drop support for `:val-query` option (use `:test-query` instead)
@@ -11,7 +11,7 @@
   * API options for DBCP2
 
 
-## 0.8.2 / 2016-July-14
+## 0.8.2 / 2016-July-14 (contributed by @nandhithar)
 
 * Refactor DSL for constructing basic JDBC params
   * Extract the DSL into [Cumulus](https://github.com/kumarshantanu/cumulus)
@@ -43,4 +43,3 @@
   * Drop properties file support
   * Drop per-database API functions
   * Adopt generic API based on keywords
-

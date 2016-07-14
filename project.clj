@@ -1,4 +1,4 @@
-(defproject clj-dbcp "0.9.0-SNAPSHOT"
+(defproject clj-dbcp "0.9.0"
   :description "Clojure wrapper for Apache DBCP to create JDBC connection pools."
   :url "https://github.com/kumarshantanu/clj-dbcp"
   :license {:name "Eclipse Public License"
@@ -28,4 +28,3 @@
             "reflect" ["assoc" ":warn-on-reflection" "true" "compile"]}
   :min-lein-version "2.0.0"
   :jvm-opts ["-Xmx1g"])
-

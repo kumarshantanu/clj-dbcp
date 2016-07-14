@@ -7,7 +7,7 @@ Clojure wrapper for Apache DBCP2 to create JDBC connections pools.
 
 On Clojars: https://clojars.org/clj-dbcp
 
-Leiningen coordinates: `[clj-dbcp "0.9.0-SNAPSHOT"]` (supports Clojure 1.5 through Clojure 1.9)
+Leiningen coordinates: `[clj-dbcp "0.9.0"]` (supports Clojure 1.5 through Clojure 1.9, Java 7 or higher)
 
 The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
@@ -163,6 +163,7 @@ $ ./run-tests.sh all
 
 * Shantanu Kumar (author)
 * Greg V (https://github.com/myfreeweb)
+* Nandhitha R (https://github.com/nandhithar)
 
 
 ## Getting in touch
@@ -174,6 +175,6 @@ On Twitter: [@kumarshantanu](https://twitter.com/kumarshantanu)
 
 ## License
 
-Copyright © 2012-2013 Shantanu Kumar
+Copyright © 2012-2016 Shantanu Kumar
 
 Distributed under the Eclipse Public License, the same as Clojure.
