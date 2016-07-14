@@ -48,7 +48,6 @@
            user
            username
            password
-           val-query  ; DEPRECATED, FIXME: remove in 0.9
            test-query
            init-size
            min-idle
@@ -77,12 +76,6 @@
     (when user        (.setUsername datasource (as-str user)))
     (when username    (.setUsername datasource (as-str username)))
     (when password    (.setPassword datasource (as-str password)))
-    (when val-query   (do (assert (string? val-query))
-                          (doto datasource
-                            (.setValidationQuery ^String val-query)
-                            (.setTestOnBorrow  true)
-                            (.setTestOnReturn  true)
-                            (.setTestWhileIdle true))))
     (when test-query   (do (assert (string? test-query))
                            (doto datasource
                              (.setValidationQuery ^String test-query)

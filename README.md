@@ -29,7 +29,7 @@ The recommended way to create a datasource is to call the
                   :jdbc-url "jdbc:mysql://localhost/empdb"
                   :username "empuser"
                   :password "s3cr3t"
-                  :val-query "SELECT 1;"})
+                  :test-query "SELECT 1;"})
 ```
 
 You can also parse a database URL (Heroku style) and use to create datasource:
@@ -50,7 +50,7 @@ Sections below describe which of the keys are applicable to various databases:
 ### JDBC parameters
 
 Required: `:classname` (string), `:jdbc-url` (string)
-Optional: `:val-query` (string, DEPRECATED) OR `:test-query` (string)
+Optional: `:test-query` (string)
 
 
 ### Optional keys for all JDBC connections
@@ -61,7 +61,7 @@ Optional: `:val-query` (string, DEPRECATED) OR `:test-query` (string)
 | `:user`           | Database username                      |                 |
 | `:username`       | Database username, same as `:user`     |                 |
 | `:password`       | Database password                      |                 |
-| `:val-query`      | Validation query                       | As per `:target`|
+| `:test-query`      | Validation query                       | As per `:target`|
 | `:init-size`      | Initial size of connection pool (int)  |                 |
 | `:min-idle`       | Minimum idle connections in pool (int) |                 |
 | `:max-idle`       | Maximum idle connections in pool (int) |                 |
@@ -77,8 +77,8 @@ Optional: `:val-query` (string, DEPRECATED) OR `:test-query` (string)
 
 | `:adapter`     | Required keys            | Desired keys |
 |----------------|--------------------------|--------------|
-| `:jdbc`        | `:classname` `:jdbc-url` | `:val-query` |
-| `:subprotocol` | `:classname` `:subname`  | `:val-query` |
+| `:jdbc`        | `:classname` `:jdbc-url` | `:test-query` |
+| `:subprotocol` | `:classname` `:subname`  | `:test-query` |
 
 
 ### [DEPRECATED] ODBC connections (likely applicable for the Windows platform)

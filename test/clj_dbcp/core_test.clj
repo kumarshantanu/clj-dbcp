@@ -100,22 +100,22 @@
   [;; implicit :jdbc adapter
    {:classname "org.apache.derby.jdbc.EmbeddedDriver"
     :jdbc-url  "jdbc:derby:memory:defaultjdbc;create=true;"
-    :val-query "values(1)"}
+    :test-query "values(1)"}
    ;; explicit :jdbc adapter
    {:adapter   :jdbc
     :classname "org.apache.derby.jdbc.EmbeddedDriver"
     :jdbc-url  "jdbc:derby:memory:defaultjdbcexplicit;create=true;"
-    :val-query "values(1)"}
+    :test-query "values(1)"}
    ;; implicit :subprotocol adapter
    {:classname "org.apache.derby.jdbc.EmbeddedDriver"
     :subprotocol "derby"
     :subname "memory:defaultsubproto;create=true;"
-    :val-query "values(1)"}
+    :test-query "values(1)"}
    ;; explicit :subprotocol adapter
    {:classname "org.apache.derby.jdbc.EmbeddedDriver"
     :subprotocol "derby"
     :subname "memory:defaultsubprotoexplicit;create=true;"
-    :val-query "values(1)"}])
+    :test-query "values(1)"}])
 
 
 (deftest test-jdbc
