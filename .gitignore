@@ -15,4 +15,5 @@ TAGS
 /.nrepl-port
 /.project
 /.settings/
+/pom.xml.asc
 
