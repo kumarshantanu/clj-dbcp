@@ -9,12 +9,10 @@
                  :other-archives ["https://groups.google.com/group/clojure"]
                  :post "bitumenframework@googlegroups.com"}
   :java-source-paths ["java-src"]
-  :javac-options {:destdir "target/classes/"
-                  :source  "1.6"
-                  :target  "1.6"}
+  :javac-options ["-target" "1.7" "-source" "1.7" "-Xlint:-options"]
   :global-vars {*warn-on-reflection* true
                 *assert* false}
-  :dependencies [[commons-dbcp "1.4"]]
+  :dependencies [[org.apache.commons/commons-dbcp2 "2.1.1"]]
   :profiles {:provided {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
                                   [oss-jdbc    "0.8.0"]
@@ -24,8 +22,7 @@
              :c16 {:dependencies [[org.clojure/clojure "1.6.0"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :c18 {:dependencies [[org.clojure/clojure "1.8.0"]]}
-             :c19 {:dependencies [[org.clojure/clojure "1.9.0-alpha10"]]}
-}
+             :c19 {:dependencies [[org.clojure/clojure "1.9.0-alpha10"]]}}
   :aliases {"dev"     ["with-profile" "dev,c15"]
             "all"     ["with-profile" "dev,c15:dev,c16:dev,c17:dev,c18:dev,c19"]
             "reflect" ["assoc" ":warn-on-reflection" "true" "compile"]}

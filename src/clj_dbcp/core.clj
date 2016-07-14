@@ -6,7 +6,7 @@
   (:import (java.net URI)
     (java.sql DriverManager)
     (javax.sql DataSource)
-    (org.apache.commons.dbcp BasicDataSource)
+    (org.apache.commons.dbcp2 BasicDataSource)
     (clj_dbcp ConnectionWrapper)))
 
 
@@ -51,16 +51,32 @@
            init-size
            min-idle
            max-idle
-           max-active
+           max-total
            pool-pstmt?
            max-open-pstmt
            remove-abandoned?
            remove-abandoned-timeout-seconds
-           log-abandoned?]
+           log-abandoned?
+           lifo-pool?
+           test-while-idle?
+           test-on-borrow?
+           test-on-return?
+           test-query-timeout
+           millis-between-eviction-runs
+           min-evictable-millis
+           tests-per-eviction
+           cache-state?]
     :or {pool-pstmt?                      true
          remove-abandoned?                true
          remove-abandoned-timeout-seconds 60
-         log-abandoned?                   true}
+         log-abandoned?                   true
+         lifo-pool?                       false
+         test-on-borrow?                  false
+         test-on-return?                  false
+         test-while-idle?                 false
+         millis-between-eviction-runs     -1
+         min-evictable-millis             1800000
+         tests-per-eviction               3}
     :as opts}]
   {:pre [(string? classname) (seq classname)
          (Class/forName classname)
@@ -90,9 +106,9 @@
     (when max-idle    (do (assert (integer? max-idle))
                           (assert (pos?     max-idle))
                           (.setMaxIdle datasource max-idle)))
-    (when max-active  (do (assert (integer? max-active))
-                          (assert (pos?     max-active))
-                          (.setMaxActive datasource max-active)))
+    (when max-total  (do (assert (integer? max-total))
+                         (assert (pos?     max-total))
+                         (.setMaxTotal datasource max-total)))
     (when pool-pstmt? (do (assert (true?    pool-pstmt?))
                           (.setPoolPreparedStatements datasource true)))
     (when max-open-pstmt
@@ -100,9 +116,9 @@
                           (assert (pos?     max-open-pstmt))
                           (.setMaxOpenPreparedStatements datasource
                                                          max-open-pstmt)))
-    (when remove-abandoned?
-                      (do (assert (true?    remove-abandoned?))
-                          (.setRemoveAbandoned datasource true)))
+;    (when remove-abandoned?
+;                      (do (assert (true?    remove-abandoned?))
+;                          (.setRemoveAbandoned datasource true)))
     (when remove-abandoned-timeout-seconds
                       (do (assert (integer? remove-abandoned-timeout-seconds))
                           (assert (pos?     remove-abandoned-timeout-seconds))
@@ -111,6 +127,21 @@
     (when log-abandoned?
                       (do (assert (true?    log-abandoned?))
                           (.setLogAbandoned datasource true)))
+    (when lifo-pool? (.setLifo datasource lifo-pool?))
+    (when test-on-borrow? (.setTestOnBorrow datasource test-on-borrow?))
+    (when test-on-return? (.setTestOnReturn datasource test-on-return?))
+    (when test-while-idle? (.setTestWhileIdle datasource test-on-return?))
+    (when test-query-timeout (do (assert (integer? test-query-timeout))
+                                  (.setValidationQueryTimeout datasource test-query-timeout)))
+    (when millis-between-eviction-runs (do (assert (integer? millis-between-eviction-runs))
+                         (.setTimeBetweenEvictionRunsMillis datasource millis-between-eviction-runs)))
+    (when min-evictable-millis (do (assert (integer? min-evictable-millis))
+                         (assert (pos?     min-evictable-millis))
+                         (.setMinEvictableIdleTimeMillis datasource min-evictable-millis)))
+    (when tests-per-eviction (do (assert (integer? tests-per-eviction))
+                          (assert (pos?     tests-per-eviction))
+                          (.setNumTestsPerEvictionRun datasource tests-per-eviction)))
+    (when cache-state? (.setCacheState datasource cache-state?))
     datasource))
 
 

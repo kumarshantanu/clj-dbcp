@@ -7,8 +7,8 @@
 * Drop support for Clojure `1.2` through `1.4` (for code cleanup)
 * Drop support for DSL API for JDBC params (use Cumulus instead)
 * Drop support for `:val-query` option (use `:test-query` instead)
-* [TODO] Use Apache DBCP2 instead of DBCP1.x
-  * [TODO] API options for DBCP2
+* Use Apache DBCP2 instead of DBCP1.x
+  * API options for DBCP2
 
 
 ## 0.8.2 / 2016-July-14
