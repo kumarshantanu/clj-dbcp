@@ -25,15 +25,11 @@ The recommended way to create a datasource is to call the
 `clj-dbcp.core/make-datasource` function, for example:
 
 ```clojure
-(make-datasource {:adapter :mysql :host 'localhost :database 'empdb
-                  :username "empuser" :password "s3cr3t"})
-```
-
-or,
-
-```clojure
-(make-datasource :mysql {:host 'localhost :database 'empdb
-                         :user :empuser   :password 's3cr3t})
+(make-datasource {:classname "com.mysql.jdbc.Driver"
+                  :jdbc-url "jdbc:mysql://localhost/empdb"
+                  :username "empuser"
+                  :password "s3cr3t"
+                  :val-query "SELECT 1;"})
 ```
 
 You can also parse a database URL (Heroku style) and use to create datasource:
@@ -49,6 +45,12 @@ or,
 ```
 
 Sections below describe which of the keys are applicable to various databases:
+
+
+### JDBC parameters
+
+Required: `:classname` (string), `:jdbc-url` (string)
+Optional: `:val-query` (string, DEPRECATED) OR `:test-query` (string)
 
 
 ### Optional keys for all JDBC connections
@@ -71,7 +73,7 @@ Sections below describe which of the keys are applicable to various databases:
 | `:log-abandoned?` | Whether to log abandoned connections   | true            |
 
 
-### Generic JDBC connections
+### [DEPRECATED] Generic JDBC connections
 
 | `:adapter`     | Required keys            | Desired keys |
 |----------------|--------------------------|--------------|
@@ -79,7 +81,7 @@ Sections below describe which of the keys are applicable to various databases:
 | `:subprotocol` | `:classname` `:subname`  | `:val-query` |
 
 
-### ODBC connections (likely applicable for the Windows platform)
+### [DEPRECATED] ODBC connections (likely applicable for the Windows platform)
 
 | `:adapter`   | Required keys | Optional keys |
 |--------------|---------------|---------------|
@@ -87,7 +89,7 @@ Sections below describe which of the keys are applicable to various databases:
 | `:odbc-lite` | `:dsn`        |               |
 
 
-### Open Source embedded databases
+### [DEPRECATED] Open Source embedded databases
 
 | Database | `:adapter` | `:target`  | Required keys           | Optional keys |
 |----------|------------|------------|-------------------------|---------------|
@@ -109,7 +111,7 @@ Sections below describe which of the keys are applicable to various databases:
 |          |            | `:filesys` | `:database`             |               |
 
 
-### Open Source drivers, network connections
+### [DEPRECATED] Open Source drivers, network connections
 
 | Database          | `:adapter`        | Required keys       | Optional keys |
 |-------------------|-------------------|---------------------|---------------|
@@ -122,7 +124,7 @@ Sections below describe which of the keys are applicable to various databases:
 | PostgreSQL        | `:postgresql`     | `:host` `:database` | `:port`       |
 
 
-### Proprietary Oracle drivers (`:adapter` = `:oracle`, default `:style` = `:system-id`)
+### [DEPRECATED] Proprietary Oracle drivers (`:adapter` = `:oracle`, default `:style` = `:system-id`)
 
 |`:style`       | Required keys                       | Optional keys |
 |---------------|-------------------------------------|---------------|
@@ -134,7 +136,7 @@ Sections below describe which of the keys are applicable to various databases:
 |`:oci8`        | `:database`/`:tns-alias`            |               |
 
 
-### Other proprietary drivers, network connections
+### [DEPRECATED] Other proprietary drivers, network connections
 
 | Database   | `:adapter`   | Required keys                    | Optional keys |
 |------------|--------------|----------------------------------|---------------|

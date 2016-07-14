@@ -11,16 +11,19 @@
 (deftest test-parse-url
   (let [m #(let [ks (sort (keys %))] (zipmap ks (map % ks)))]
     (is (= (m {:adapter  :postgresql
+               :classname "org.postgresql.Driver"
                :username "foo"
                :password "bar"
                :jdbc-url "jdbc:postgresql://heroku.com/hellodb"})
           (m (parse-url "postgres://foo:bar@heroku.com/hellodb"))))
     (is (= (m {:adapter  :mysql
+               :classname "org.postgresql.Driver"
                :username "foo"
                :password "bar"
                :jdbc-url "jdbc:mysql://baz.com:5432/hellodb"})
           (m (parse-url "jdbc:mysql://foo:bar@baz.com:5432/hellodb"))))
     (is (= (m {:adapter  :postgresql
+               :classname "org.postgresql.Driver"
                :jdbc-url "jdbc:postgresql:///hellodb"})
           (m (parse-url "postgresql://foo:bar@heroku.com:-5/hellodb"))))))
 

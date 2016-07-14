@@ -1,9 +1,9 @@
 (ns clj-dbcp.core
   "Create DataSource using Apache DBCP"
-  (:require [clojure.string :as str]
-    ;[clj-dbcp.adapter :as adap]
+  (:require
+    [clojure.string :as str]
     [cumulus.core :as c])
-  (:use [clj-dbcp.util :only (as-str)])
+  (:use [clj-dbcp.util :only (as-str)])  ; FIXME refactor using `require :refer` in 0.9
   (:import (java.net URI)
     (java.sql DriverManager)
     (javax.sql DataSource)
@@ -48,7 +48,8 @@
            user
            username
            password
-           val-query
+           val-query  ; DEPRECATED, FIXME: remove in 0.9
+           test-query
            init-size
            min-idle
            max-idle
@@ -82,6 +83,12 @@
                             (.setTestOnBorrow  true)
                             (.setTestOnReturn  true)
                             (.setTestWhileIdle true))))
+    (when test-query   (do (assert (string? test-query))
+                           (doto datasource
+                             (.setValidationQuery ^String test-query)
+                             (.setTestOnBorrow  true)
+                             (.setTestOnReturn  true)
+                             (.setTestWhileIdle true))))
     (when init-size   (do (assert (integer? init-size))
                           (assert (pos?     init-size))
                           (.setInitialSize datasource init-size)))
@@ -152,6 +159,7 @@
             scheme  (.getScheme ^URI jdbc-uri)
             adapter (subproto-map scheme scheme)]
         (merge {:adapter  (keyword adapter)
+                :classname "org.postgresql.Driver"
                 :jdbc-url (str "jdbc:" adapter "://" host
                             (when port ":") (or port "") path
                             (when query "?") (or query ""))}
@@ -177,15 +185,10 @@
 
 (defn make-datasource
   "Create datasource from a given option-map. Some examples are below:
-  (make-datasource :derby {:target :memory :database :emp})            ;; embedded databases
-  (make-datasource :mysql {:host :localhost :database :emp
-                           :username \"root\" :password \"s3cr3t\"})   ;; standard OSS databases
   (make-datasource :jdbc  {:jdbc-url   \"jdbc:mysql://localhost/emp\"
                            :class-name \"com.mysql.Driver\"})          ;; JDBC arguments
   (make-datasource :odbc  {:dsn :sales_report})                        ;; ODBC connections
   (make-datasource :jndi  {:context \"whatever\"})                     ;; JNDI connections
-  (make-datasource {:adapter :pgsql :host :localhost :database :emp
-                    :username :foo :password :bar})                    ;; :adapter in opts
   (make-datasource {:adapter :odbc-lite :dsn :moo})                    ;; ODBC-lite (MS-Access, MS-Excel etc.)
   (make-datasource {:class-name 'com.mysql.Driver
                     :jdbc-url   \"jdbc:mysql://localhost/emp\"})       ;; JDBC is default adapter"
