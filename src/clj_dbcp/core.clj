@@ -57,6 +57,8 @@
            remove-abandoned?
            remove-abandoned-timeout-seconds
            log-abandoned?
+           remove-abandoned-on-borrow?
+           remove-abandoned-on-maintenance?
            lifo-pool?
            test-while-idle?
            test-on-borrow?
@@ -68,9 +70,13 @@
            cache-state?]
     :or {pool-pstmt?                      true
          remove-abandoned?                true
+         init-size                        1
+         min-idle                         1
+         max-total                        2
+         max-idle                         1
          remove-abandoned-timeout-seconds 60
+         lifo-pool                        false
          log-abandoned?                   true
-         lifo-pool?                       false
          test-on-borrow?                  false
          test-on-return?                  false
          test-while-idle?                 false
@@ -116,9 +122,12 @@
                           (assert (pos?     max-open-pstmt))
                           (.setMaxOpenPreparedStatements datasource
                                                          max-open-pstmt)))
-;    (when remove-abandoned?
-;                      (do (assert (true?    remove-abandoned?))
-;                          (.setRemoveAbandoned datasource true)))
+    (when remove-abandoned-on-borrow?
+                      (do (assert (true?    remove-abandoned?))
+                          (.setRemoveAbandonedOnBorrow datasource true)))
+    (when remove-abandoned-on-maintenance?
+                      (do (assert (true?    remove-abandoned?))
+                          (.setRemoveAbandonedOnMaintenance datasource true)))
     (when remove-abandoned-timeout-seconds
                       (do (assert (integer? remove-abandoned-timeout-seconds))
                           (assert (pos?     remove-abandoned-timeout-seconds))

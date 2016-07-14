@@ -6,7 +6,9 @@
     [clojure.java.jdbc      :as sql]
     [cumulus.core           :as c])
   (:use clojure.test
-    clj-dbcp.core))
+    clj-dbcp.core)
+  (:import
+    [javax.sql DataSource]))
 
 
 (deftest test-parse-url
@@ -190,6 +192,29 @@
     (test-one each)))
 
 
+(deftest test-options
+  (testing "happy options combo"
+    (with-open [ds (make-datasource :h2 {:target :memory
+                                         :database "foo"
+                                         :username "user"
+                                         :password "password"
+                                         :pool-pstmt? true
+                                         :max-open-pstmt 2
+                                         :remove-abandoned-on-borrow? true
+                                         :remove-abandoned-on-maintenance? true})]
+      (is (instance? DataSource ds))))
+  (testing "unhappy (bad type) options"
+    (is (thrown? ClassCastException
+          (make-datasource :h2 {:target :memory
+                                :database "foo"
+                                :username "user"
+                                :password "password"
+                                :pool-pstmt? 2
+                                :max-open-pstmt true
+                                :remove-abandoned-on-borrow? true
+                                :remove-abandoned-on-maintenance? true})))))
+
+
 (defn test-ns-hook
   []
   (test-parse-url)
@@ -197,4 +222,5 @@
   (test-embedded)
   ;; (test-odbc)    ;; to be run only on Windows
   (test-network)
+  (test-options)
   (test-jndi))
