@@ -4,9 +4,9 @@
     [clj-dbcp.test-util     :as tu]
     [clojure.pprint         :as pp]
     [clojure.java.jdbc      :as sql]
-    [cumulus.core           :as c])
-  (:use clojure.test
-    clj-dbcp.core)
+    [cumulus.core           :as c]
+    [clojure.test  :refer :all]
+    [clj-dbcp.core :refer :all])
   (:import
     [javax.sql DataSource]))
 
