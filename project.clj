@@ -10,8 +10,8 @@
                  :post "bitumenframework@googlegroups.com"}
   :java-source-paths ["java-src"]
   :javac-options {:destdir "target/classes/"
-                  :source  "1.5"  ; FIXME drop support for JDK 1.5 in 0.9
-                  :target  "1.5"}
+                  :source  "1.6"
+                  :target  "1.6"}
   :global-vars {*warn-on-reflection* true
                 *assert* false}
   :dependencies [[commons-dbcp "1.4"]

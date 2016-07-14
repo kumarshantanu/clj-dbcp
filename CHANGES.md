@@ -3,7 +3,7 @@
 
 ## 0.9.0 / 2016-July-??
 
-* [TODO] Drop support for JDK 1.5 (now Java 6 or higher is required)
+* Drop support for JDK 1.5 (now Java 6 or higher is required)
 * [TODO] Drop support for Clojure `1.2` through `1.4` (for code cleanup)
 * [TODO] Drop support for DSL API for JDBC params (use Cumulus instead)
 * [TODO] Drop support for `:val-query` option (use `:test-query` instead)
