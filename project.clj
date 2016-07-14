@@ -15,7 +15,7 @@
   :global-vars {*warn-on-reflection* true
                 *assert* false}
   :dependencies [[commons-dbcp "1.4"]
-                 [cumulus "0.1.1-SNAPSHOT"]]
+                 [cumulus "0.1.1"]]
   :profiles {:provided {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
                                   [oss-jdbc    "0.8.0"]
