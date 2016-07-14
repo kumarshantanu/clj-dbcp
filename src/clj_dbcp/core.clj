@@ -1,13 +1,14 @@
 (ns clj-dbcp.core
   "Create DataSource using Apache DBCP"
-  (:require [clojure.string :as str]
-            [clj-dbcp.adapter :as adap])
-  (:use [clj-dbcp.util :only (as-str)])
+  (:require
+    [clojure.string :as str]
+    [cumulus.core :as c])
+  (:use [clj-dbcp.util :only (as-str)])  ; FIXME refactor using `require :refer` in 0.9
   (:import (java.net URI)
-           (java.sql DriverManager)
-           (javax.sql DataSource)
-           (org.apache.commons.dbcp BasicDataSource)
-           (clj_dbcp ConnectionWrapper)))
+    (java.sql DriverManager)
+    (javax.sql DataSource)
+    (org.apache.commons.dbcp BasicDataSource)
+    (clj_dbcp ConnectionWrapper)))
 
 
 (defn jndi-datasource
@@ -32,10 +33,10 @@
   You can fetch this datasource as follows:
     (jndi-datasource \"java:comp/env/jdbc/EmployeeDB\")"
   ([^javax.naming.Context init-ctx ^String resource-ref-name]
-     {:post [(instance? DataSource %)]}
-     (.lookup init-ctx resource-ref-name))
+    {:post [(instance? DataSource %)]}
+    (.lookup init-ctx resource-ref-name))
   ([resource-ref-name]
-     (jndi-datasource
+    (jndi-datasource
       (javax.naming.InitialContext.) resource-ref-name)))
 
 
@@ -47,7 +48,8 @@
            user
            username
            password
-           val-query
+           val-query  ; DEPRECATED, FIXME: remove in 0.9
+           test-query
            init-size
            min-idle
            max-idle
@@ -81,6 +83,12 @@
                             (.setTestOnBorrow  true)
                             (.setTestOnReturn  true)
                             (.setTestWhileIdle true))))
+    (when test-query   (do (assert (string? test-query))
+                           (doto datasource
+                             (.setValidationQuery ^String test-query)
+                             (.setTestOnBorrow  true)
+                             (.setTestOnReturn  true)
+                             (.setTestWhileIdle true))))
     (when init-size   (do (assert (integer? init-size))
                           (assert (pos?     init-size))
                           (.setInitialSize datasource init-size)))
@@ -140,7 +148,7 @@
   "Given a String or a URI instance, and an optional subproto-map for conversion
   return a map of args suitable for use with `make-datasouce`."
   ([jdbc-uri subproto-map] {:pre [(map? subproto-map)]}
-     (cond
+    (cond
       ;; URI
       (instance? URI jdbc-uri)
       (let [host (.getHost ^URI jdbc-uri)
@@ -151,55 +159,51 @@
             scheme  (.getScheme ^URI jdbc-uri)
             adapter (subproto-map scheme scheme)]
         (merge {:adapter  (keyword adapter)
+                :classname "org.postgresql.Driver"
                 :jdbc-url (str "jdbc:" adapter "://" host
-                               (when port ":") (or port "") path
-                               (when query "?") (or query ""))}
-               (if-let [user-info (.getUserInfo ^URI jdbc-uri)]
-                 (let [[un pw] (str/split user-info #":")]
-                   {:username un
-                    :password pw}))))
+                            (when port ":") (or port "") path
+                            (when query "?") (or query ""))}
+          (if-let [user-info (.getUserInfo ^URI jdbc-uri)]
+            (let [[un pw] (str/split user-info #":")]
+              {:username un
+               :password pw}))))
       ;; String
       (string? jdbc-uri)
       (parse-url (if (.startsWith ^String jdbc-uri "jdbc:")
                    (URI. (subs jdbc-uri 5))
                    (URI. jdbc-uri))
-                 subproto-map)
-      ;; default
-      :otherwise
-      (throw (IllegalArgumentException.
+        subproto-map)
+     ;; default
+     :otherwise
+     (throw (IllegalArgumentException.
               (str "Expected `jdbc-uri` to be java.net.URI or String,"
-                   " but found (" (pr-str (type jdbc-uri)) ") "
-                   (pr-str jdbc-uri))))))
+                " but found (" (pr-str (type jdbc-uri)) ") "
+                (pr-str jdbc-uri))))))
   ([jdbc-uri]
-     (parse-url jdbc-uri default-subproto-map)))
+    (parse-url jdbc-uri default-subproto-map)))
 
 
 (defn make-datasource
   "Create datasource from a given option-map. Some examples are below:
-  (make-datasource :derby {:target :memory :database :emp})            ;; embedded databases
-  (make-datasource :mysql {:host :localhost :database :emp
-                           :username \"root\" :password \"s3cr3t\"})   ;; standard OSS databases
   (make-datasource :jdbc  {:jdbc-url   \"jdbc:mysql://localhost/emp\"
                            :class-name \"com.mysql.Driver\"})          ;; JDBC arguments
   (make-datasource :odbc  {:dsn :sales_report})                        ;; ODBC connections
   (make-datasource :jndi  {:context \"whatever\"})                     ;; JNDI connections
-  (make-datasource {:adapter :pgsql :host :localhost :database :emp
-                    :username :foo :password :bar})                    ;; :adapter in opts
   (make-datasource {:adapter :odbc-lite :dsn :moo})                    ;; ODBC-lite (MS-Access, MS-Excel etc.)
   (make-datasource {:class-name 'com.mysql.Driver
                     :jdbc-url   \"jdbc:mysql://localhost/emp\"})       ;; JDBC is default adapter"
   ([adapter opts] {:pre [(keyword? adapter)]}
-     (if (= adapter :jndi) (do (assert (contains? opts :context))
-                               (assert (string?   (get opts :context)))
-                               (jndi-datasource   (:context opts)))
-         (let [e-opts (merge opts (-> opts
-                                      (assoc :adapter adapter)
-                                      adap/defaults))]
-           (if (:lite? e-opts) (lite-datasource e-opts)
-               (jdbc-datasource e-opts)))))
+    (if (= adapter :jndi) (do (assert (contains? opts :context))
+                            (assert (string?   (get opts :context)))
+                            (jndi-datasource   (:context opts)))
+      (let [e-opts (merge opts (-> opts
+                                 (assoc :adapter adapter)
+                                 c/jdbc-params))]
+        (if (:lite? e-opts) (lite-datasource e-opts)
+          (jdbc-datasource e-opts)))))
   ([opts] {:pre [(map? opts)]}
-     (let [adapter (or (:adapter opts)
-                       (when (contains? opts :subprotocol) :subprotocol)
-                       (when (contains? opts :dsn)         :odbc)
-                       :jdbc)]
-       (make-datasource adapter opts))))
+    (let [adapter (or (:adapter opts)
+                    (when (contains? opts :subprotocol) :subprotocol)
+                    (when (contains? opts :dsn)         :odbc)
+                    :jdbc)]
+      (make-datasource adapter opts))))

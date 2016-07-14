@@ -10,3 +10,9 @@ pom.xml
 .lein-plugins
 .emacs*
 TAGS
+/bin/
+/.classpath
+/.nrepl-port
+/.project
+/.settings/
+
