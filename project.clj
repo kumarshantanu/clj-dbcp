@@ -17,7 +17,7 @@
              :dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
                                   [oss-jdbc    "0.8.0"]
                                   [simple-jndi "0.11.4.1"]
-                                  [cumulus     "0.1.2-SNAPSHOT"]]}
+                                  [cumulus     "0.1.2"]]}
              :c15 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :c16 {:dependencies [[org.clojure/clojure "1.6.0"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}

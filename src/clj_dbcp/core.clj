@@ -77,12 +77,13 @@
          remove-abandoned-timeout-seconds 60
          lifo-pool                        false
          log-abandoned?                   true
-         test-on-borrow?                  false
-         test-on-return?                  false
-         test-while-idle?                 false
+         test-on-borrow?                  true
+         test-on-return?                  true
+         test-while-idle?                 true
          millis-between-eviction-runs     -1
          min-evictable-millis             1800000
-         tests-per-eviction               3}
+         tests-per-eviction               3
+         cache-state?                     true}
     :as opts}]
   {:pre [(string? classname) (seq classname)
          (Class/forName classname)
