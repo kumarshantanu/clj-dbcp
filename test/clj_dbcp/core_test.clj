@@ -3,7 +3,8 @@
     [clj-dbcp.dbserver-util :as du]
     [clj-dbcp.test-util     :as tu]
     [clojure.pprint         :as pp]
-    [clojure.java.jdbc      :as sql])
+    [clojure.java.jdbc      :as sql]
+    [cumulus.core           :as c])
   (:use clojure.test
     clj-dbcp.core))
 
@@ -83,11 +84,6 @@
               (teardown))))))))
 
 
-(deftest test-adapter-arg
-  (test-datasource (make-datasource :axiondb {:target :memory
-                                              :database :defaultmax})))
-
-
 (deftest test-jndi
   "See also (not used): http://commons.apache.org/dbcp/guide/jndi-howto.html"
   (tu/with-root-context (javax.naming.InitialContext.)
@@ -120,7 +116,7 @@
 
 (deftest test-jdbc
   (doseq [each jdbc-tests]
-    (test-one each)))
+    (test-one (c/jdbc-params each))))
 
 
 (def embed-tests
@@ -156,7 +152,7 @@
 
 (deftest test-embedded
   (doseq [each embed-tests]
-    (test-one each)))
+    (test-one (c/jdbc-params each))))
 
 
 (def network-tests
@@ -180,8 +176,8 @@
 
 (deftest test-network
   (doseq [each network-tests]
-    (test-one (zipmap [:adapter :host :user :password :database]
-                each))))
+    (test-one (c/jdbc-params (zipmap [:adapter :host :user :password :database]
+                               each)))))
 
 
 (def odbc-tests
@@ -197,7 +193,6 @@
 (defn test-ns-hook
   []
   (test-parse-url)
-  (test-adapter-arg)
   (test-jdbc)
   (test-embedded)
   ;; (test-odbc)    ;; to be run only on Windows

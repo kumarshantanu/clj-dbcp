@@ -5,7 +5,7 @@
 
 * Drop support for JDK 1.5 (now Java 6 or higher is required)
 * Drop support for Clojure `1.2` through `1.4` (for code cleanup)
-* [TODO] Drop support for DSL API for JDBC params (use Cumulus instead)
+* Drop support for DSL API for JDBC params (use Cumulus instead)
 * Drop support for `:val-query` option (use `:test-query` instead)
 * [TODO] Use Apache DBCP2 instead of DBCP1.x
   * [TODO] API options for DBCP2

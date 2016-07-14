@@ -2,7 +2,6 @@
   "Create DataSource using Apache DBCP"
   (:require
     [clojure.string :as str]
-    [cumulus.core :as c]
     [clj-dbcp.util :refer (as-str)])
   (:import (java.net URI)
     (java.sql DriverManager)
@@ -189,9 +188,7 @@
     (if (= adapter :jndi) (do (assert (contains? opts :context))
                             (assert (string?   (get opts :context)))
                             (jndi-datasource   (:context opts)))
-      (let [e-opts (merge opts (-> opts
-                                 (assoc :adapter adapter)
-                                 c/jdbc-params))]
+      (let [e-opts (assoc opts :adapter adapter)]
         (if (:lite? e-opts) (lite-datasource e-opts)
           (jdbc-datasource e-opts)))))
   ([opts] {:pre [(map? opts)]}
