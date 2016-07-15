@@ -43,31 +43,31 @@ Optional: `:test-query` (string)
 
 ### Optional keys for all JDBC connections
 
-| Keyword arg       | Meaning                                | Default/special |
-|-------------------|----------------------------------------|-----------------|
-| `:properties`     | Map of property names and values       |                 |
-| `:user`           | Database username                      |                 |
-| `:username`       | Database username, same as `:user`     |                 |
-| `:password`       | Database password                      |                 |
-| `:test-query`      | Validation query                       | As per `:target`|
-| `:init-size`      | Initial size of connection pool (int)  |                 |
-| `:min-idle`       | Minimum idle connections in pool (int) |                 |
-| `:max-idle`       | Maximum idle connections in pool (int) |                 |
-| `:max-total`     | Maximum active connections in pool (int) |  -ve=no limit |
-| `:pool-pstmt?`    | Whether to pool prepared statements    | true            |
-| `:max-open-pstmt` | Maximum open prepared statements (int) |                 |
-| `:remove-abandoned?`    | Whether to remove abandoned connections  | true        |
-| `:remove-abandoned-timeout-seconds` | Timeout in seconds (int)     | 300         |
-| `:log-abandoned?`       | Whether to log abandoned connections     | true        |
-| `:lifo-pool?`           | Whether Last-In-First-Out (LIFO) or not  | false       |
-| `:test-while-idle?`     | Whether validate the idle connections    | true        |
-| `:test-on-borrow?`      | Whether validate connections on borrow   | true        |
-| `:test-on-return?`      | Whether validate connections on return   | true        |
-| `:test-query-timeout`   | Timeout (seconds) for validation queries |             |
-| `:millis-between-eviction-runs`     | Millis to sleep between evicting unused connections | `-1` |
-| `:min-evictable-millis` | Millis an object may sit idle before it is evicted              | `1800000` |
-| `:tests-per-eviction`   | No. of connections to test during each eviction run             | `3` |
-| `:cache-state?`         | Whether to cache state                   |      true   |
+| Keyword arg             | Meaning                                    | Default/special |
+|-------------------------|--------------------------------------------|-----------------|
+| `:properties`           | Map of property names and values           |                 |
+| `:user`                 | Database username                          |                 |
+| `:username`             | Database username, same as `:user`         |                 |
+| `:password`             | Database password                          |                 |
+| `:test-query`           | Validation query                           | As per `:target`|
+| `:init-size`            | Initial size of connection pool (int)      |                 |
+| `:min-idle`             | Minimum idle connections in pool (int)     |                 |
+| `:max-idle`             | Maximum idle connections in pool (int)     |                 |
+| `:max-total`            | Maximum active connections in pool (int)   |  -ve=no limit   |
+| `:pool-pstmt?`          | Whether to pool prepared statements        | true            |
+| `:max-open-pstmt`       | Maximum open prepared statements (int)     |                 |
+| `:remove-abandoned?`    | Whether to remove abandoned connections    | true            |
+| `:remove-abandoned-timeout-seconds` | Timeout in seconds (int)       | 300             |
+| `:log-abandoned?`       | Whether to log abandoned connections       | true            |
+| `:lifo-pool?`           | Whether Last-In-First-Out (LIFO) or not    | false           |
+| `:test-while-idle?`     | Whether validate the idle connections      | true            |
+| `:test-on-borrow?`      | Whether validate connections on borrow     | true            |
+| `:test-on-return?`      | Whether validate connections on return     | true            |
+| `:test-query-timeout`   | Timeout (seconds) for validation queries   |                 |
+| `:millis-between-eviction-runs` | Millis to sleep between evictions  | `-1`            |
+| `:min-evictable-millis` | Millis a connection may sit idle before eviction | `1800000` |
+| `:tests-per-eviction`   | No. of connections to test in each eviction run  | `3`       |
+| `:cache-state?`         | Whether to cache state                           | true      |
 
 
 ### Generic JDBC connections
@@ -94,23 +94,33 @@ or,
 
 ### Example
 
-A typical CRUD example using Derby database is below:
+A typical CRUD example using Derby database is below.
 
-Leiningen dependencies: [asphalt/asphalt "0.4.0"] 
-                        [clj-dbcp "0.9.0"]
+Leiningen dependencies:
+
+```clojure
+[clj-dbcp "0.9.0"]
+[asphalt  "0.4.0"]  ; for JDBC CRUD operations
+[mysql/mysql-connector-java "6.0.2"]  ; MySQL JDBC driver 
+```
+ 
+Example code:
 
 ```clojure
 (ns example.app
+(ns newproj.core
   (:require 
     [clj-dbcp.core     :as dbcp]
+    [clojure.java.jdbc :as sql]
     [asphalt.core :as a]))
 
 (def db-sql  ;; an in-memory database instance
+  {:datasource
    (dbcp/make-datasource
      {:classname "com.mysql.jdbc.Driver" 
-      :jdbc-url   "jdbc:mysql://localhost:3306/new_db" 
+      :jdbc-url   "jdbc:mysql://localhost:3306/new_db"
       :user "root" 
-      :password "root"}))
+      :password "root"})})
 
 (defn crud
   []
@@ -119,8 +129,8 @@ Leiningen dependencies: [asphalt/asphalt "0.4.0"]
     "INSERT INTO emp (id, name, age) VALUES (?, ?, ?)"
     [1, "Bashir",40])
   (a/update db-sql
-    "INSERT INTO emp (id, name, age) VALUES (?, ?, ?)"
-    [2, "Shabir",50])
+    "UPDATE EMP set name=\"Shabir\", age=50 where id=1"
+    [])
   (println (a/query a/fetch-rows
              db-sql
              "SELECT id, name, age FROM emp" []))
