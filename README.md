@@ -96,13 +96,12 @@ or,
 
 A typical CRUD example using Derby database is below:
 
-Leiningen coordinates: [asphalt/asphalt "0.4.0"] [clj-dbcp "0.9.0"]
+Leiningen dependencies: [asphalt/asphalt "0.4.0"] [clj-dbcp "0.9.0"]
 
 ```clojure
 (ns example.app
   (:require 
     [clj-dbcp.core     :as dbcp]
-    [clojure.java.jdbc :as sql]
     [asphalt.core :as a]))
 
 (def db-sql  ;; an in-memory database instance
