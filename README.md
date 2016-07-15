@@ -53,7 +53,7 @@ Optional: `:test-query` (string)
 | `:init-size`      | Initial size of connection pool (int)  |                 |
 | `:min-idle`       | Minimum idle connections in pool (int) |                 |
 | `:max-idle`       | Maximum idle connections in pool (int) |                 |
-| `:max-active`     | Maximum active connections in pool (int) |  -ve=no limit |
+| `:max-total`     | Maximum active connections in pool (int) |  -ve=no limit |
 | `:pool-pstmt?`    | Whether to pool prepared statements    | true            |
 | `:max-open-pstmt` | Maximum open prepared statements (int) |                 |
 | `:remove-abandoned?`    | Whether to remove abandoned connections  | true        |
@@ -96,18 +96,22 @@ or,
 
 A typical CRUD example using Derby database is below:
 
+Leiningen coordinates: [asphalt/asphalt "0.4.0"]  [clj-dbcp "0.9.0”]
+
 ```clojure
 (ns example.app
-(:require [clj-dbcp.core     :as dbcp]
-          [asphalt.core :as a]))
+  (:require 
+    [clj-dbcp.core     :as dbcp]
+    [clojure.java.jdbc :as sql]
+    [asphalt.core :as a]))
 
 (def db-sql  ;; an in-memory database instance
   {:datasource
    (dbcp/make-datasource
-     {:classname  "com.mysql.jdbc.Driver" 
-      :jdbc-url   "jdbc:mysql://localhost:3306/new_db"
-      :user       "root" 
-      :password   "root"})})
+     {:classname "com.mysql.jdbc.Driver" 
+      :jdbc-url   "jdbc:mysql://localhost:3306/new_db" 
+      :user "root" 
+      :password "root"})})
 
 (defn crud
   []
@@ -118,9 +122,11 @@ A typical CRUD example using Derby database is below:
   (a/update db-sql
     "INSERT INTO emp (id, name, age) VALUES (?, ?, ?)"
     [2, "Shabir",50])
-  (a/query a/fetch-rows
-    db-sql
-    "SELECT id, name, age FROM emp" []))
+  (println (a/query a/fetch-rows
+             db-sql
+             "SELECT id, name, age FROM emp" []))
+  (a/update db-sql
+    "DROP TABLE EMP" []))
 
 ```
 
