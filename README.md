@@ -53,7 +53,7 @@ Optional: `:test-query` (string)
 | `:init-size`      | Initial size of connection pool (int)  |                 |
 | `:min-idle`       | Minimum idle connections in pool (int) |                 |
 | `:max-idle`       | Maximum idle connections in pool (int) |                 |
-| `:max-active`     | Maximum active connections in pool (int) |  -ve=no limit |
+| `:max-total`     | Maximum active connections in pool (int) |  -ve=no limit |
 | `:pool-pstmt?`    | Whether to pool prepared statements    | true            |
 | `:max-open-pstmt` | Maximum open prepared statements (int) |                 |
 | `:remove-abandoned?`    | Whether to remove abandoned connections  | true        |
