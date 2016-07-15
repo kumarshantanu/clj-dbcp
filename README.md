@@ -111,7 +111,6 @@ Example code:
 (ns newproj.core
   (:require 
     [clj-dbcp.core     :as dbcp]
-    [clojure.java.jdbc :as sql]
     [asphalt.core :as a]))
 
 (def db-sql  ;; an in-memory database instance
