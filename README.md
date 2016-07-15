@@ -96,7 +96,8 @@ or,
 
 A typical CRUD example using Derby database is below:
 
-Leiningen dependencies: [asphalt/asphalt "0.4.0"] [clj-dbcp "0.9.0"]
+Leiningen dependencies: [asphalt/asphalt "0.4.0"] 
+                        [clj-dbcp "0.9.0"]
 
 ```clojure
 (ns example.app
@@ -105,12 +106,11 @@ Leiningen dependencies: [asphalt/asphalt "0.4.0"] [clj-dbcp "0.9.0"]
     [asphalt.core :as a]))
 
 (def db-sql  ;; an in-memory database instance
-  {:datasource
    (dbcp/make-datasource
      {:classname "com.mysql.jdbc.Driver" 
       :jdbc-url   "jdbc:mysql://localhost:3306/new_db" 
       :user "root" 
-      :password "root"})})
+      :password "root"}))
 
 (defn crud
   []
