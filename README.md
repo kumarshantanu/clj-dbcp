@@ -53,7 +53,7 @@ Optional: `:test-query` (string)
 | `:init-size`      | Initial size of connection pool (int)  |                 |
 | `:min-idle`       | Minimum idle connections in pool (int) |                 |
 | `:max-idle`       | Maximum idle connections in pool (int) |                 |
-| `:max-total`     | Maximum active connections in pool (int) |  -ve=no limit |
+| `:max-active`     | Maximum active connections in pool (int) |  -ve=no limit |
 | `:pool-pstmt?`    | Whether to pool prepared statements    | true            |
 | `:max-open-pstmt` | Maximum open prepared statements (int) |                 |
 | `:remove-abandoned?`    | Whether to remove abandoned connections  | true        |
@@ -96,7 +96,7 @@ or,
 
 A typical CRUD example using Derby database is below:
 
-Leiningen coordinates: [asphalt/asphalt "0.4.0"]  [clj-dbcp "0.9.0”]
+Leiningen coordinates: [asphalt/asphalt "0.4.0"] [clj-dbcp "0.9.0"]
 
 ```clojure
 (ns example.app
@@ -127,7 +127,6 @@ Leiningen coordinates: [asphalt/asphalt "0.4.0"]  [clj-dbcp "0.9.0”]
              "SELECT id, name, age FROM emp" []))
   (a/update db-sql
     "DROP TABLE EMP" []))
-
 ```
 
 
