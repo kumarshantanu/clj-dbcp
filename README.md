@@ -98,40 +98,30 @@ A typical CRUD example using Derby database is below:
 
 ```clojure
 (ns example.app
-  (:require [clj-dbcp.core     :as dbcp]
-            [clojure.java.jdbc :as sql]))
+(:require [clj-dbcp.core     :as dbcp]
+          [asphalt.core :as a]))
 
-(def db-derby  ;; an in-memory database instance
+(def db-sql  ;; an in-memory database instance
   {:datasource
    (dbcp/make-datasource
-     {"org.apache.derby.jdbc.EmbeddedDriver"
-     "jdbc:derby:memory:foo;create=true;"
-     "values(1)"})})
+     {:classname  "com.mysql.jdbc.Driver" 
+      :jdbc-url   "jdbc:mysql://localhost:3306/new_db"
+      :user       "root" 
+      :password   "root"})})
 
 (defn crud
   []
-  (let [table :emp
-        orig-record {:id 1 :name "Bashir" :age 40}
-        updt-record {:id 1 :name "Shabir" :age 50}
-        drop-table  #(sql/do-commands "DROP TABLE emp")
-        retrieve-fn #(sql/with-query-results rows
-                      ["SELECT * FROM emp WHERE id=?" 1]
-                      (first rows))]
-    (sql/with-connection db-derby
-      ;; drop table if pre-exists
-      (try (drop-table)
-        (catch Exception _)) ; ignore exception
-      ;; create table
-      (sql/do-commands
-        "CREATE TABLE emp (id INTEGER, name VARCHAR(50), age INTEGER)")
-      ;; insert
-      (sql/insert-values table (keys orig-record) (vals orig-record))
-      ;; retrieve
-      (println (retrieve-fn))
-      ;; update
-      (sql/update-values table ["id=?" 1] updt-record)
-      ;; drop table
-      (drop-table))))
+  (a/update db-sql "CREATE TABLE IF NOT EXISTS EMP (ID int, Name varchar (25), Age int)" [])
+  (a/update db-sql
+    "INSERT INTO emp (id, name, age) VALUES (?, ?, ?)"
+    [1, "Bashir",40])
+  (a/update db-sql
+    "INSERT INTO emp (id, name, age) VALUES (?, ?, ?)"
+    [2, "Shabir",50])
+  (a/query a/fetch-rows
+    db-sql
+    "SELECT id, name, age FROM emp" []))
+
 ```
 
 
